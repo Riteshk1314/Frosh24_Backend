@@ -36,8 +36,8 @@ def EventList(request):
 def EventView(request,pk):
     
     if request.method=='GET':
-        events=Event.objects.get(pk=pk)
-        serializer=eventSerializer(car)
+        event=Event.objects.get(pk=pk)
+        serializer=eventSerializer(event)
         serializer_data=serializer.data
         return Response(serializer_data)
     
