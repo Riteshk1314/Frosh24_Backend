@@ -5,5 +5,5 @@ from .views import EventList
 from .views import EventView
 urlpatterns = [
     path('list/', views.EventList),
-    path('<int:id>/', views.EventView),
+    path('<int:pk>/', views.EventView),
 ]

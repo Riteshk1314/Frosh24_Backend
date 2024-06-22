@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from .serializers import eventSerializer
-from .models import Event
+from .models import Events
 from django.shortcuts import render
 from django.http import JsonResponse
 from django.http import HttpResponse
@@ -17,7 +17,7 @@ from rest_framework.permissions import IsAdminUser,AllowAny,IsAuthenticated
 @api_view(['GET','POST'])
 def EventList(request):
     if request.method=='GET':
-        events=Event.objects.all()
+        events=Events.objects.all()
         serializer=eventSerializer(events,many=True)
         return Response(serializer.data)
     
@@ -36,7 +36,7 @@ def EventList(request):
 def EventView(request,pk):
     
     if request.method=='GET':
-        event=Event.objects.get(pk=pk)
+        event=Events.objects.get(pk=pk)
         serializer=eventSerializer(event)
         serializer_data=serializer.data
         return Response(serializer_data)
@@ -44,7 +44,7 @@ def EventView(request,pk):
     if request.method=='PUT':
         try:
             
-            event=Event.objects.get(pk=pk)
+            event=Events.objects.get(pk=pk)
         except:
             return Response({'error':'event not found'},status=status.HTTP_404_NOT_FOUND)
         serializer=eventSerializer(event, data=request.data)
@@ -57,7 +57,7 @@ def EventView(request,pk):
             return Response(serializer.errors)
         
     if request.method=='DELETE':
-        event=Event.objects.get(pk=pk)
+        event=Events.objects.get(pk=pk)
         event.delete()
         return Response(status=202)
         
