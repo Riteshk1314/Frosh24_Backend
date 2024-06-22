@@ -1,8 +1,7 @@
 from django.shortcuts import render
-from serializers import eventSerializer
-from models import Eventlist
+from .serializers import eventSerializer
+from .models import Event
 from django.shortcuts import render
-from .models import carlist,showroomlist, review
 from django.http import JsonResponse
 from django.http import HttpResponse
 import json
@@ -16,9 +15,9 @@ from rest_framework.authentication import BasicAuthentication
 from rest_framework.permissions import IsAdminUser,AllowAny,IsAuthenticated
 
 @api_view(['GET','POST'])
-def event_list_view(request):
+def EventList(request):
     if request.method=='GET':
-        events=Eventlist.objects.all()
+        events=Event.objects.all()
         serializer=eventSerializer(events,many=True)
         return Response(serializer.data)
     
@@ -34,10 +33,10 @@ def event_list_view(request):
         
 
 @api_view(['GET','PUT','DELETE'])
-def event_detail_view(request,pk):
+def EventView(request,pk):
     
     if request.method=='GET':
-        car=carlist.objects.get(pk=pk)
+        events=Event.objects.get(pk=pk)
         serializer=eventSerializer(car)
         serializer_data=serializer.data
         return Response(serializer_data)
@@ -45,10 +44,10 @@ def event_detail_view(request,pk):
     if request.method=='PUT':
         try:
             
-            car=carlist.objects.get(pk=pk)
+            event=Event.objects.get(pk=pk)
         except:
             return Response({'error':'event not found'},status=status.HTTP_404_NOT_FOUND)
-        serializer=eventSerializer(car, data=request.data)
+        serializer=eventSerializer(event, data=request.data)
         if serializer.is_valid():
             serializer.save()
             serializer_data=serializer.data
@@ -58,7 +57,7 @@ def event_detail_view(request,pk):
             return Response(serializer.errors)
         
     if request.method=='DELETE':
-        car=carlist.objects.get(pk=pk)
-        car.delete()
+        event=Event.objects.get(pk=pk)
+        event.delete()
         return Response(status=202)
         
