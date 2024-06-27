@@ -28,4 +28,9 @@ class CustomUserManager(BaseUserManager):
                     pass 
                 else:
                     break
+    def create_superuser(self, registration_id, password=None, **extra_fields):
+        extra_fields.setdefault('is_staff', True)
+        extra_fields.setdefault('is_active', True)
+        extra_fields.setdefault('is_superuser', True)
 
+        return self.create_user(registration_id, password, **extra_fields)
