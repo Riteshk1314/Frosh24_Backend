@@ -108,3 +108,4 @@ class GeneratePassView(APIView):
 class scanner(APIView):
     def get(self, request):
         user = request.User
+        
