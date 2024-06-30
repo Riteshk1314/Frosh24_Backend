@@ -86,9 +86,9 @@ WSGI_APPLICATION = 'froshbackend.wsgi.application'
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": "mydatabase",
-        "USER": "mydatabaseuser",
-        "PASSWORD": "mypassword",
+        "NAME": "newdb",
+        "USER": "ritesh",
+        "PASSWORD": "helo1234",
         "HOST": "127.0.0.1",
         "PORT": "5432",
     }
