@@ -144,7 +144,7 @@ class VideoCamera:
         qr_data = None
         for obj in decoded:
             qr_data = obj.data.decode('utf-8')
-            break  # Just take the first QR code found
+            break  
 
         return jpg_as_text, qr_data
 
@@ -156,7 +156,7 @@ def scanner(request):
         camera = VideoCamera()
 
     if request.headers.get('x-requested-with') == 'XMLHttpRequest':
-        # This is an AJAX request for a new frame
+        
         frame, qr_data = camera.get_frame()
         if frame is None:
             return JsonResponse({'error': 'Failed to capture frame'})
@@ -165,5 +165,5 @@ def scanner(request):
             'qr_data': qr_data
         })
     else:
-        # This is the initial page load
+    
         return render(request, 'website/scanner.html')
