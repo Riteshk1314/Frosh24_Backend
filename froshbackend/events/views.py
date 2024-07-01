@@ -13,6 +13,41 @@ from rest_framework import mixins
 from rest_framework import generics 
 from rest_framework.authentication import BasicAuthentication
 from rest_framework.permissions import IsAdminUser,AllowAny,IsAuthenticated
+        
+from django.shortcuts import render, HttpResponse, redirect
+from django.contrib import messages
+from django.core.mail import send_mail, EmailMultiAlternatives
+from django.conf import settings
+from django.contrib.auth.decorators import login_required
+from django.views.decorators.csrf import csrf_exempt
+from django.template.loader import render_to_string
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+from datetime import datetime
+
+from datetime import date, time, datetime
+
+from datetime import datetime
+
+import random, string
+import json
+import sys
+import os
+
+import pyzbar.pyzbar as pyzbar
+import cv2 
+import numpy
+
+# from .models import Events
+# from users.test import qr_maker, generate_user_secure_id
+# from ..users.views import *
+# from ..users.models import User
+
+
+import threading
+from django.views.decorators import gzip
+from django.http import StreamingHttpResponse
 
 @api_view(['GET','POST'])
 def EventList(request):
@@ -60,34 +95,7 @@ def EventView(request,pk):
         event=Events.objects.get(pk=pk)
         event.delete()
         return Response(status=202)
-        
-from django.shortcuts import render, HttpResponse, redirect
-from django.contrib import messages
-from django.core.mail import send_mail, EmailMultiAlternatives
-from django.conf import settings
-from django.contrib.auth.decorators import login_required
-from django.views.decorators.csrf import csrf_exempt
-from django.template.loader import render_to_string
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework import status
-from datetime import datetime
-
-from datetime import date, time, datetime
-
-from datetime import datetime
-
-import random, string
-import json
-import sys
-import os
-
-# from .models import Events
-# from users.test import qr_maker, generate_user_secure_id
-# from ..users.views import *
-# from ..users.models import User
-
-
+from django.views.decorators import gzip
 from django.utils import timezone
 @csrf_exempt
 @login_required
@@ -98,14 +106,52 @@ class GeneratePassView(APIView):
         if not user.is_authenticated:
             return Response({"error": "User must be authenticated"}, status=status.HTTP_401_UNAUTHORIZED)
         
-        # Generate a new pass for the user
         else:
             user.is_booked=True
             user.last_scanned=datetime.now().time()
             sentence = "Ticket booked successfully"
             return json.dumps({"sentence": sentence})
         
-class scanner(APIView):
-    def get(self, request):
-        user = request.User
         
+class VideoCamera(object):
+    def __init__(self):
+        self.video = cv2.VideoCapture(1)
+        (self.grabbed, self.frame) = self.video.read()
+        threading.Thread(target=self.update, args=()).start()
+
+    def __del__(self):
+        self.video.release()
+
+    def get_frame(self):
+        image = self.frame
+        _, jpeg = cv2.imencode('.jpg', image)
+        return jpeg.tobytes()
+
+    def update(self):
+        while True:
+            (self.grabbed, self.frame) = self.video.read()
+            
+            
+          
+@gzip.gzip_page          
+def scanner(request):
+    try:
+        i=0
+        cap=VideoCamera()
+    
+        while i<4:
+            _,frame=cap.read()
+            decoded=pyzbar.decode(frame)
+            x="null"
+            for obj in decoded:
+                x=obj.data
+                i=i+1
+        return StreamingHttpResponse(cap, content_type='multipart/x-mixed-replace; boundary=frame')  
+            
+        
+    except Exception as e:
+        print(f"An error occurred: {e}")
+        pass
+
+    return render(request, 'website/home.html')
+
