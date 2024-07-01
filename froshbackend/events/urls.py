@@ -7,5 +7,7 @@ from .views import scanner
 urlpatterns = [
     path('list/', views.EventList),
     path('<int:pk>/', views.EventView),
-    path("scan/",views.scanner,name="home"),
+    path("scan/",views.scanner, name='scanner'),
+
+    # path('get_qr_data/', views.get_qr_data, name='get_qr_data'),
 ]

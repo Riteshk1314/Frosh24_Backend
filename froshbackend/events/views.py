@@ -48,6 +48,7 @@ import numpy
 import threading
 from django.views.decorators import gzip
 from django.http import StreamingHttpResponse
+backends = [cv2.CAP_DSHOW, cv2.CAP_MSMF, cv2.CAP_VFW]
 
 @api_view(['GET','POST'])
 def EventList(request):
@@ -112,46 +113,57 @@ class GeneratePassView(APIView):
             sentence = "Ticket booked successfully"
             return json.dumps({"sentence": sentence})
         
-        
-class VideoCamera(object):
+        import cv2
+import threading
+from django.http import StreamingHttpResponse
+from django.views.decorators.gzip import gzip_page
+from django.shortcuts import render
+from pyzbar import pyzbar
+import cv2
+import base64
+from django.http import JsonResponse
+from django.shortcuts import render
+from pyzbar import pyzbar
+
+class VideoCamera:
     def __init__(self):
-        self.video = cv2.VideoCapture(1)
-        (self.grabbed, self.frame) = self.video.read()
-        threading.Thread(target=self.update, args=()).start()
+        self.video = cv2.VideoCapture(0)
 
     def __del__(self):
         self.video.release()
 
     def get_frame(self):
-        image = self.frame
-        _, jpeg = cv2.imencode('.jpg', image)
-        return jpeg.tobytes()
+        success, image = self.video.read()
+        if not success:
+            return None, None
 
-    def update(self):
-        while True:
-            (self.grabbed, self.frame) = self.video.read()
-            
-            
-          
-@gzip.gzip_page          
+        _, buffer = cv2.imencode('.jpg', image)
+        jpg_as_text = base64.b64encode(buffer).decode()
+
+        decoded = pyzbar.decode(image)
+        qr_data = None
+        for obj in decoded:
+            qr_data = obj.data.decode('utf-8')
+            break  # Just take the first QR code found
+
+        return jpg_as_text, qr_data
+
+camera = None
+
 def scanner(request):
-    try:
-        i=0
-        cap=VideoCamera()
-    
-        while i<4:
-            _,frame=cap.read()
-            decoded=pyzbar.decode(frame)
-            x="null"
-            for obj in decoded:
-                x=obj.data
-                i=i+1
-        return StreamingHttpResponse(cap, content_type='multipart/x-mixed-replace; boundary=frame')  
-            
-        
-    except Exception as e:
-        print(f"An error occurred: {e}")
-        pass
+    global camera
+    if camera is None:
+        camera = VideoCamera()
 
-    return render(request, 'website/home.html')
-
+    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+        # This is an AJAX request for a new frame
+        frame, qr_data = camera.get_frame()
+        if frame is None:
+            return JsonResponse({'error': 'Failed to capture frame'})
+        return JsonResponse({
+            'frame': frame,
+            'qr_data': qr_data
+        })
+    else:
+        # This is the initial page load
+        return render(request, 'website/scanner.html')
