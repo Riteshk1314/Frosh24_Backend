@@ -60,4 +60,74 @@ def EventView(request,pk):
         event=Events.objects.get(pk=pk)
         event.delete()
         return Response(status=202)
+from django.views.decorators import gzip
+from django.utils import timezone
+@csrf_exempt
+@login_required
+class GeneratePassView(APIView):
+    def post(self, request):
+        user = request.User
+        last_scanned = request.data.get('booking_time', timezone.now())
+        if not user.is_authenticated:
+            return Response({"error": "User must be authenticated"}, status=status.HTTP_401_UNAUTHORIZED)
         
+        else:
+            user.is_booked=True
+            user.last_scanned=datetime.now().time()
+            sentence = "Ticket booked successfully"
+            return json.dumps({"sentence": sentence})
+        
+        import cv2
+import threading
+from django.http import StreamingHttpResponse
+from django.views.decorators.gzip import gzip_page
+from django.shortcuts import render
+from pyzbar import pyzbar
+import cv2
+import base64
+from django.http import JsonResponse
+from django.shortcuts import render
+from pyzbar import pyzbar
+
+class VideoCamera:
+    def __init__(self):
+        self.video = cv2.VideoCapture(0)
+
+    def __del__(self):
+        self.video.release()
+
+    def get_frame(self):
+        success, image = self.video.read()
+        if not success:
+            return None, None
+
+        _, buffer = cv2.imencode('.jpg', image)
+        jpg_as_text = base64.b64encode(buffer).decode()
+
+        decoded = pyzbar.decode(image)
+        qr_data = None
+        for obj in decoded:
+            qr_data = obj.data.decode('utf-8')
+            break   
+
+        return jpg_as_text, qr_data
+
+camera = None
+
+def scanner(request):
+    global camera
+    if camera is None:
+        camera = VideoCamera()
+
+    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+       
+        frame, qr_data = camera.get_frame()
+        if frame is None:
+            return JsonResponse({'error': 'Failed to capture frame'})
+        return JsonResponse({
+            'frame': frame,
+            'qr_data': qr_data
+        })
+    else:
+ 
+        return render(request, 'website/scanner.html')
