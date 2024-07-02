@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>QR Code Scanner</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        function updateFrame() {
+            $.getJSON("{% url 'scanner' %}", function(data) {
+                if (data.frame) {
+                    $("#video").attr("src", "data:image/jpeg;base64," + data.frame);
+                }
+                if (data.qr_data) {
+                    $("#qr-content").text(data.qr_data);
+                }
+            });
+        }
+
+        $(document).ready(function() {
+            setInterval(updateFrame, 100);  // Update every 100ms
+        });
+    </script>
+</head>
+<body>
+    <h1>QR Code Scanner</h1>
+    <img id="video" alt="QR Code Scanner">
+    <h2>Scanned QR Code Content:</h2>
+    <p id="qr-content"></p>
+</body>
+</html>

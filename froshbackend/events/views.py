@@ -13,6 +13,45 @@ from rest_framework import mixins
 from rest_framework import generics 
 from rest_framework.authentication import BasicAuthentication
 from rest_framework.permissions import IsAdminUser,AllowAny,IsAuthenticated
+<<<<<<< HEAD
+=======
+        
+from django.shortcuts import render, HttpResponse, redirect
+from django.contrib import messages
+from django.core.mail import send_mail, EmailMultiAlternatives
+from django.conf import settings
+from django.contrib.auth.decorators import login_required
+from django.views.decorators.csrf import csrf_exempt
+from django.template.loader import render_to_string
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+from datetime import datetime
+
+from datetime import date, time, datetime
+
+from datetime import datetime
+
+import random, string
+import json
+import sys
+import os
+
+import pyzbar.pyzbar as pyzbar
+import cv2 
+import numpy
+
+# from .models import Events
+# from users.test import qr_maker, generate_user_secure_id
+# from ..users.views import *
+# from ..users.models import User
+
+
+import threading
+from django.views.decorators import gzip
+from django.http import StreamingHttpResponse
+backends = [cv2.CAP_DSHOW, cv2.CAP_MSMF, cv2.CAP_VFW]
+>>>>>>> branch1
 
 @api_view(['GET','POST'])
 def EventList(request):
@@ -108,7 +147,11 @@ class VideoCamera:
         qr_data = None
         for obj in decoded:
             qr_data = obj.data.decode('utf-8')
+<<<<<<< HEAD
             break   
+=======
+            break  
+>>>>>>> branch1
 
         return jpg_as_text, qr_data
 
@@ -120,7 +163,11 @@ def scanner(request):
         camera = VideoCamera()
 
     if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+<<<<<<< HEAD
        
+=======
+        
+>>>>>>> branch1
         frame, qr_data = camera.get_frame()
         if frame is None:
             return JsonResponse({'error': 'Failed to capture frame'})
@@ -129,5 +176,9 @@ def scanner(request):
             'qr_data': qr_data
         })
     else:
+<<<<<<< HEAD
  
+=======
+    
+>>>>>>> branch1
         return render(request, 'website/scanner.html')

@@ -15,6 +15,11 @@ class User(AbstractUser):
     registration_id = models.CharField(unique=True, max_length=20)
     secure_id = models.CharField(unique=True, max_length=8, null=True, blank=True)
     qr = models.URLField(blank=True)
+<<<<<<< HEAD
+=======
+    last_scanned = models.DateTimeField(auto_now_add=True)
+    id_booked=False
+>>>>>>> branch1
     # events = models.JSONField(default=default_events, blank=True) 
     USERNAME_FIELD = "registration_id"
     REQUIRED_FIELD = ['image', 'qr']
