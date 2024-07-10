@@ -187,14 +187,30 @@ import json
 def qr_scanner_view(request):
     return render(request, 'website/qr_scanner.html')
 
+
 @csrf_exempt
 def process_qr(request):
     if request.method == 'POST':
         data = json.loads(request.body)
-        qr_data = data.get('qr_data')
-        
-        # Process the QR data as needed
-        # For example, you might want to save it to the database
-        
-        return JsonResponse({'status': 'success', 'qr_content': qr_data})
+        registration_number = data.get('qr_data')
+        student = user.objects.get(registration_number=registration_number)
+        try:
+            
+            student_info = {
+                'name': student.name,
+                'last_scanned': student.course,
+                'is_scanned': student.year,
+                'image': student.image ,
+                }
+            
+            return JsonResponse({
+                'status': 'success',
+                'student_info': student_info
+            })
+        except student.DoesNotExist:
+            return JsonResponse({
+                'status': 'error',
+                'message': 'Student not found'
+            })
+    
     return JsonResponse({'status': 'error', 'message': 'Invalid request'})

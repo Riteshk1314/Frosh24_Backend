@@ -1,4 +1,4 @@
-{% extends "base.html" %}  {# Assuming you have a base template #}
+{% extends "base.html" %}
 
 {% block content %}
 <h1>QR Code Scanner</h1>
@@ -31,7 +31,7 @@ function scanQRCode() {
                 inversionAttempts: "dontInvert",
             });
             if (code) {
-                outputElement.textContent = "QR Code detected: " + code.data;
+                outputElement.textContent = "QR Code detected. Fetching student information...";
                 sendQRCodeToServer(code.data);
                 return;
             }
@@ -52,12 +52,25 @@ function sendQRCodeToServer(qrData) {
     .then(response => response.json())
     .then(data => {
         if (data.status === 'success') {
-            document.getElementById('output').textContent = "Processed QR Code: " + data.qr_content;
+            const studentInfo = data.student_info;
+            let infoHTML = `
+                <h2>Student Information</h2>
+                <p>Name: ${studentInfo.name}</p>
+                <p>lat_scanned: ${studentInfo.last_scanned}</p>
+                <p>is_scanned: ${studentInfo.is_scanned}</p>
+                ${studentInfo.image
+                ? `<img src="${studentInfo.image_url}" alt="Student Photo">`
+                : '<p>No image available</p>'}
+            `;
+            document.getElementById('output').innerHTML = infoHTML;
         } else {
-            console.error('Error processing QR code');
+            document.getElementById('output').textContent = "Error: " + data.message;
         }
     })
-    .catch((error) => console.error('Error:', error));
+    .catch((error) => {
+        console.error('Error:', error);
+        document.getElementById('output').textContent = "An error occurred while fetching student information.";
+    });
 }
 
 function getCookie(name) {
