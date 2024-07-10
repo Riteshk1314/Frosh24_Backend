@@ -3,17 +3,13 @@ from django.urls import path
 from . import views
 from .views import EventList
 from .views import EventView
-<<<<<<< HEAD
+from .views import qr_scanner_view,process_qr
 urlpatterns = [
     path('list/', views.EventList),
     path('<int:pk>/', views.EventView),
-=======
-from .views import scanner
-urlpatterns = [
-    path('list/', views.EventList),
-    path('<int:pk>/', views.EventView),
-    path("scan/",views.scanner, name='scanner'),
+    # path("scan/",views.scanner, name='scanner'),
+    path('scan/', views.qr_scanner_view, name='qr_scanner'),
+    path('scan/process/', views.process_qr, name='process_qr'),
 
     # path('get_qr_data/', views.get_qr_data, name='get_qr_data'),
->>>>>>> branch1
 ]

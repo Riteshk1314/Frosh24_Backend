@@ -13,8 +13,6 @@ from rest_framework import mixins
 from rest_framework import generics 
 from rest_framework.authentication import BasicAuthentication
 from rest_framework.permissions import IsAdminUser,AllowAny,IsAuthenticated
-<<<<<<< HEAD
-=======
         
 from django.shortcuts import render, HttpResponse, redirect
 from django.contrib import messages
@@ -51,7 +49,6 @@ import threading
 from django.views.decorators import gzip
 from django.http import StreamingHttpResponse
 backends = [cv2.CAP_DSHOW, cv2.CAP_MSMF, cv2.CAP_VFW]
->>>>>>> branch1
 
 @api_view(['GET','POST'])
 def EventList(request):
@@ -127,58 +124,77 @@ import base64
 from django.http import JsonResponse
 from django.shortcuts import render
 from pyzbar import pyzbar
+from django.shortcuts import render
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+import json
 
-class VideoCamera:
-    def __init__(self):
-        self.video = cv2.VideoCapture(0)
+# class VideoCamera:
+#     def __init__(self):
+#         self.video = cv2.VideoCapture(0)
 
-    def __del__(self):
-        self.video.release()
+#     def __del__(self):
+#         self.video.release()
 
-    def get_frame(self):
-        success, image = self.video.read()
-        if not success:
-            return None, None
+#     def get_frame(self):
+#         success, image = self.video.read()
+#         if not success:
+#             return None, None
 
-        _, buffer = cv2.imencode('.jpg', image)
-        jpg_as_text = base64.b64encode(buffer).decode()
+#         _, buffer = cv2.imencode('.jpg', image)
+#         jpg_as_text = base64.b64encode(buffer).decode()
 
-        decoded = pyzbar.decode(image)
-        qr_data = None
-        for obj in decoded:
-            qr_data = obj.data.decode('utf-8')
-<<<<<<< HEAD
-            break   
-=======
-            break  
->>>>>>> branch1
+#         decoded = pyzbar.decode(image)
+#         qr_data = None
+#         for obj in decoded:
+#             qr_data = obj.data.decode('utf-8')
+# <<<<<<< HEAD
+#             break   
+# =======
+#             break  
+# >>>>>>> branch1
 
-        return jpg_as_text, qr_data
+#         return jpg_as_text, qr_data
 
-camera = None
+# camera = None
 
-def scanner(request):
-    global camera
-    if camera is None:
-        camera = VideoCamera()
+# def scanner(request):
+#     global camera
+#     if camera is None:
+#         camera = VideoCamera()
 
-    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
-<<<<<<< HEAD
+#     if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+# <<<<<<< HEAD
        
-=======
+# =======
         
->>>>>>> branch1
-        frame, qr_data = camera.get_frame()
-        if frame is None:
-            return JsonResponse({'error': 'Failed to capture frame'})
-        return JsonResponse({
-            'frame': frame,
-            'qr_data': qr_data
-        })
-    else:
-<<<<<<< HEAD
+# >>>>>>> branch1
+#         frame, qr_data = camera.get_frame()
+#         if frame is None:
+#             return JsonResponse({'error': 'Failed to capture frame'})
+#         return JsonResponse({
+#             'frame': frame,
+#             'qr_data': qr_data
+#         })
+#     else:
+# <<<<<<< HEAD
  
-=======
+# =======
     
->>>>>>> branch1
-        return render(request, 'website/scanner.html')
+# >>>>>>> branch1
+#         return render(request, 'website/scanner.html')
+
+def qr_scanner_view(request):
+    return render(request, 'website/qr_scanner.html')
+
+@csrf_exempt
+def process_qr(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        qr_data = data.get('qr_data')
+        
+        # Process the QR data as needed
+        # For example, you might want to save it to the database
+        
+        return JsonResponse({'status': 'success', 'qr_content': qr_data})
+    return JsonResponse({'status': 'error', 'message': 'Invalid request'})
