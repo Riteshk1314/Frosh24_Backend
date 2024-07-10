@@ -1,9 +1,3 @@
-<<<<<<< HEAD
-import qrcode.image.svg
-factory = qrcode.image.svg.SvgPathFillImage
-svg_img=qrcode.make("hello", image_factory=factory)
-svg_img.save("myqr.svg")
-=======
 # import qrcode.image.svg
 # factory = qrcode.image.svg.SvgPathFillImage
 # svg_img=qrcode.make("hello", image_factory=factory)
@@ -26,4 +20,3 @@ def scan():
         
 
 scan()
->>>>>>> branch1
