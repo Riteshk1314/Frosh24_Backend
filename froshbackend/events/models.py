@@ -1,9 +1,5 @@
 from django.db import models
 
-<<<<<<< HEAD
-# Create your models here.
-=======
->>>>>>> branch1
 
 class Events(models.Model):
     name = models.CharField(max_length=256)
@@ -16,11 +12,8 @@ class Events(models.Model):
     image = models.URLField(default='https://darkroomphotos.com/wp-content/uploads/2021/10/image-file-formats-header-1-1-678x381@2x.png')
     calendar_url = models.URLField(default='#')
     booking_required = models.BooleanField(default=True)
-<<<<<<< HEAD
     is_booking = models.BooleanField(default=False)
-=======
     is_booking_open = models.BooleanField(default=False)
->>>>>>> branch1
     is_display = models.BooleanField(default=False)
     slots_required = models.BooleanField(default=False)
     booking_complete = models.BooleanField(default=False)
