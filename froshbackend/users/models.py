@@ -2,7 +2,7 @@ from django.db import models
 from django.test import TestCase
 from django.db import models
 from django.contrib.auth.models import AbstractUser
-
+from django.contrib.postgres.fields import ArrayField
 from django.db.models.signals import pre_save
 from django.dispatch import receiver
 from .manager import CustomUserManager
@@ -17,6 +17,7 @@ class User(AbstractUser):
     qr = models.URLField(blank=True)
     last_scanned = models.DateTimeField(auto_now_add=True)
     id_booked=False
+    events = ArrayField(models.CharField(max_length=100), blank=True, null=True)
     # events = models.JSONField(default=default_events, blank=True) 
     USERNAME_FIELD = "registration_id"
     REQUIRED_FIELD = ['image', 'qr']
