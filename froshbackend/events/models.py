@@ -13,7 +13,7 @@ class Events(models.Model):
     calendar_url = models.URLField(default='#')
     booking_required = models.BooleanField(default=True)
     is_booking = models.BooleanField(default=False)
-    is_booking_open = models.BooleanField(default=False)
+    is_live = models.BooleanField(default=False)
     is_display = models.BooleanField(default=False)
     slots_required = models.BooleanField(default=False)
     booking_complete = models.BooleanField(default=False)
