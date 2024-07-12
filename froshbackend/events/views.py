@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from .serializers import eventSerializer
+from .serializers import eventSerializer, UserSerializer
 from .models import Events
 from django.shortcuts import render
 from django.http import JsonResponse
@@ -39,10 +39,10 @@ import pyzbar.pyzbar as pyzbar
 import cv2 
 import numpy
 
-# from .models import Events
-# from users.test import qr_maker, generate_user_secure_id
-# from ..users.views import *
-# from ..users.models import User
+from events.models import Events
+from users.test import qr_maker, generate_user_secure_id
+from users.views import *
+from users.models import User
 
 
 import threading
@@ -50,22 +50,36 @@ from django.views.decorators import gzip
 from django.http import StreamingHttpResponse
 backends = [cv2.CAP_DSHOW, cv2.CAP_MSMF, cv2.CAP_VFW]
 
-@api_view(['GET','POST'])
-def EventList(request):
-    if request.method=='GET':
-        events=Events.objects.all()
-        serializer=eventSerializer(events,many=True)
-        return Response(serializer.data)
+# @api_view(['GET','POST'])
+# def EventList(request):
+#     if request.method=='GET':
+#         events=Events.objects.all()
+#         serializer=eventSerializer(events,many=True)
+#         return Response(serializer.data)
     
     
-    if request.method=='POST':
-        serializer=eventSerializer(data=request.data)
+#     if request.method=='POST':
+#         serializer=eventSerializer(data=request.data)
+#         if serializer.is_valid():
+#             serializer.save()
+#             return Response(serializer.data)
+#         else:
+#             return Response(serializer.errors)
+
+class EventList(generics.ListCreateAPIView):
+    queryset = Events.objects.all()
+    serializer_class = eventSerializer
+
+    def list(self, request, *args, **kwargs):
+        # Customize GET behavior if needed
+        return super().list(request, *args, **kwargs)
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
         if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        else:
-            return Response(serializer.errors)
-        
+            self.perform_create(serializer)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         
 
 @api_view(['GET','PUT','DELETE'])
@@ -98,22 +112,48 @@ def EventView(request,pk):
         return Response(status=202)
 from django.views.decorators import gzip
 from django.utils import timezone
-@csrf_exempt
-@login_required
-class GeneratePassView(APIView):
-    def post(self, request):
-        user = request.User
-        last_scanned = request.data.get('booking_time', timezone.now())
-        if not user.is_authenticated:
-            return Response({"error": "User must be authenticated"}, status=status.HTTP_401_UNAUTHORIZED)
-        
-        else:
-            user.is_booked=True
-            user.last_scanned=datetime.now().time()
-            sentence = "Ticket booked successfully"
-            return json.dumps({"sentence": sentence})
-        
-        import cv2
+
+
+
+@api_view(['POST'])
+def book_ticket(request, user_id):
+    try:
+        user = User.objects.get(id=user_id)
+    except User.DoesNotExist:
+        return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
+    
+    if user.is_booked:
+        return Response({"error": "User already has a booked ticket"}, status=status.HTTP_400_BAD_REQUEST)
+    
+    user.is_booked = True
+    user.save()
+    
+    live_event = Events.objects.filter(is_live=True).first()
+    live_event.available_tickets -= 1
+    live_event.save()
+    
+    
+    user.events.add(live_event)
+    
+    
+    serializer = UserSerializer(user)
+    return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 import threading
 from django.http import StreamingHttpResponse
 from django.views.decorators.gzip import gzip_page
@@ -194,8 +234,7 @@ def process_qr(request):
         data = json.loads(request.body)
         registration_number = data.get('qr_data')
         student = user.objects.get(registration_number=registration_number)
-        try:
-            
+        try:   
             student_info = {
                 'name': student.name,
                 'last_scanned': student.course,
