@@ -153,6 +153,11 @@ def book_ticket(request, user_id):
 
 
 
+from django.shortcuts import render
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+import json
+
 
 import threading
 from django.http import StreamingHttpResponse
@@ -223,33 +228,65 @@ import json
     
 # >>>>>>> branch1
 #         return render(request, 'website/scanner.html')
-
-def qr_scanner_view(request):
-    return render(request, 'website/qr_scanner.html')
-
+import traceback
 
 @csrf_exempt
-def process_qr(request):
-    if request.method == 'POST':
-        data = json.loads(request.body)
-        registration_number = data.get('qr_data')
-        student = user.objects.get(registration_number=registration_number)
-        try:   
-            student_info = {
-                'name': student.name,
-                'last_scanned': student.course,
-                'is_scanned': student.year,
-                'image': student.image ,
-                }
+def qr_scanner_view(request):
+    if request.method == 'GET':
+        # Render the HTML page with the QR scanner
+        return render(request, 'website/qr_scanner.html')
+    elif request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            qr_data = data.get('qr_data')
             
+            # Log the received QR data for debugging
+            print(f"Received QR data: {qr_data}")
+            
+            # Try to get the user by ID
+            try:
+                user_id = qr_data
+                user = User.objects.get(registration_id=user_id)
+                
+                # Update last_scanned
+                user.last_scanned = timezone.now()
+                user.save()
+                user.is_scanned=True
+                user.save()
+                print("scan succesfull")
+                
+                return JsonResponse({
+                    'success': True,
+                    'user_id': user.id,
+                    'is_scanned': user.is_scanned,
+                    #'is_booked': user.is_booked,
+                    'last_scanned': user.last_scanned.isoformat(),
+                    'message': 'User information retrieved successfully'
+                })
+                
+            except User.DoesNotExist:
+                return JsonResponse({
+                    'success': False,
+                    'error': f'No user found with ID {qr_data}',
+                    'message': 'Please check if the QR code contains a valid user ID'
+                }, status=404)
+            except ValueError:
+                return JsonResponse({
+                    'success': False,
+                    'error': f'Invalid user ID format: {qr_data}',
+                    'message': 'The QR code should contain a numeric user ID'
+                }, status=400)
+            
+        except json.JSONDecodeError:
+            return JsonResponse({'success': False, 'error': 'Invalid JSON'}, status=400)
+        except Exception as e:
+            # Log the full exception for debugging
+            print(f"An unexpected error occurred: {str(e)}")
+            print(traceback.format_exc())
             return JsonResponse({
-                'status': 'success',
-                'student_info': student_info
-            })
-        except student.DoesNotExist:
-            return JsonResponse({
-                'status': 'error',
-                'message': 'Student not found'
-            })
-    
-    return JsonResponse({'status': 'error', 'message': 'Invalid request'})
+                'success': False, 
+                'error': 'An unexpected error occurred',
+                'details': str(e)
+            }, status=500)
+    else:
+        return JsonResponse({'success': False, 'error': 'Invalid request method'}, status=405)
