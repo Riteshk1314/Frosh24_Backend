@@ -7,7 +7,7 @@ class Events(models.Model):
     venue = models.CharField(max_length=256)
     date = models.DateField()
     time = models.CharField(max_length=256)
-    max_capacity = models.IntegerField()
+    available_tickets=models.IntegerField(blank=True, default=350) 
     passes_generated = models.IntegerField()
     image = models.URLField(default='https://darkroomphotos.com/wp-content/uploads/2021/10/image-file-formats-header-1-1-678x381@2x.png')
     calendar_url = models.URLField(default='#')
