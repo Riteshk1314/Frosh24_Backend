@@ -18,43 +18,33 @@ from .managers import CustomUserManager
 from django.conf import settings
 import os
 from .utils import qr_maker
+from django.core.mail import send_mail
+from .utils import send_credentials_email
 
 def default_events():
     return []
 logger = logging.getLogger(__name__)
+def generate_random_password():
+    return ''.join(random.choices(string.ascii_letters + string.digits, k=12))
+
+
+logger = logging.getLogger(__name__)
+
 class User(AbstractUser):
     username = None
-    password=models.CharField(blank=True)
+    password = models.CharField(blank=True, max_length=128)
     image = models.URLField(blank=True)
     registration_id = models.CharField(unique=True, max_length=20)
-
     secure_id = models.CharField(unique=True, max_length=8, null=True, blank=True)
     events = ArrayField(base_field=models.CharField(max_length=60), max_length=50, blank=True, default=list)
     qr = models.URLField(blank=True)
     last_scanned = models.DateTimeField(auto_now=True, blank=True)
     is_scanned = models.BooleanField(default=False)
-
-
+    is_booked = models.BooleanField(default=False)
+    
     USERNAME_FIELD = "registration_id"
     REQUIRED_FIELDS = ['image', 'qr']
     objects = CustomUserManager()
-
-
-    
-    def save(self, *args, **kwargs):
-        is_new = self._state.adding
-        logger.info(f"Saving user {self.registration_id}, is_new: {is_new}")
-
-        if is_new and not self.secure_id:
-            
-            self.secure_id = generate_user_secure_id()
-            logger.info(f"Generated secure_id in save method: {self.secure_id}")
-
-        super().save(*args, **kwargs)
-
-        if is_new and not self.qr:
-            logger.info(f"Generating QR code for new user {self.registration_id}")
-            self.generate_qr_code()
 
     def generate_qr_code(self):
         try:
@@ -72,23 +62,67 @@ class User(AbstractUser):
             logger.info(f"Moving file from {qr_file_path} to {full_path}")
             os.rename(qr_file_path, full_path)
             
-            self.qr = os.path.join(settings.MEDIA_URL, relative_path)
-            logger.info(f"Saving user with QR URL: {self.qr}")
-            super().save(update_fields=['qr'])
+            return os.path.join(settings.MEDIA_URL, relative_path)
         except Exception as e:
             logger.error(f"Error generating QR code: {str(e)}")
             raise
 
-@receiver(pre_save, sender=User)
-def user_pre_save(sender, instance, **kwargs):
-    logger.info(f"Pre-save signal for user {instance.registration_id}")
+    def save(self, *args, **kwargs):
+        is_new = self._state.adding
+        update_fields = kwargs.get('update_fields', None)
 
-@receiver(post_save, sender=User)
-def user_post_save(sender, instance, created, **kwargs):
-    logger.info(f"Post-save signal for user {instance.registration_id}, created: {created}")
+        if is_new:
+            if not self.secure_id:
+                self.secure_id = generate_user_secure_id()
+            
+            raw_password = None
+            if not self.password:
+                raw_password = generate_random_password()
+                self.set_password(raw_password)
 
-@receiver(pre_save, sender=User)
-def ensure_secure_id(sender, instance, **kwargs):
-    if not instance.secure_id:
-        instance.secure_id = generate_user_secure_id()
-        logger.info(f"Generated secure_id in pre_save signal: {instance.secure_id}")
+            if not self.qr:
+                self.qr = self.generate_qr_code()
+
+            # Remove update_fields for new instances
+            kwargs.pop('update_fields', None)
+        elif update_fields is not None:
+            # For existing instances, only update specified fields
+            kwargs['update_fields'] = update_fields
+
+        super().save(*args, **kwargs)
+
+        if is_new and raw_password:
+            send_credentials_email(self.email, self.registration_id, raw_password)
+            
+            
+            
+            
+            
+# @receiver(pre_save, sender=User)
+# def user_pre_save(sender, instance, **kwargs):
+#     logger.info(f"Pre-save signal for user {instance.registration_id}")
+    
+    
+        
+#     raw_password = generate_random_password()
+#     instance.set_password(raw_password)
+#     send_credentials_email(instance.email, instance.registration_id, raw_password)
+#     logger.info(f"Generated and set random password for user {instance.registration_id}")
+
+# @receiver(post_save, sender=User)
+# def user_post_save(sender, instance, created, **kwargs):
+#     logger.info(f"Post-save signal for user {instance.registration_id}, created: {created}")
+    
+#     if created and not instance.qr:
+#         logger.info(f"Generating QR code for new user {instance.registration_id}")
+#         instance.generate_qr_code()
+#     if instance._state.adding:
+#             if not instance.secure_id:
+#                 instance.secure_id = generate_user_secure_id()
+#                 logger.info(f"Generated secure_id in pre_save signal: {instance.secure_id}")
+                
+#     raw_password = generate_random_password()
+#     instance.set_password(raw_password)
+#     send_credentials_email(instance.email, instance.registration_id, raw_password)
+#     logger.info(f"Generated and set random password for user {instance.registration_id}")
+            
