@@ -12,7 +12,7 @@ urlpatterns = [
     # path('scan/', views.qr_scanner_view, name='qr_scanner'),
     # path('scan/process/', views.process_qr, name='process_qr'),
     path('scan/', views.qr_scanner_view, name='qr_scanner'),
-    path('book-ticket/<int:user_id>/', views.book_ticket, name='book_ticket'),
+    path('book-ticket', views.book_ticket, name='book_ticket'),
 
     # path('get_qr_data/', views.get_qr_data, name='get_qr_data'),
 ]
