@@ -90,7 +90,7 @@ function App() {
   };
 
   return (
-    <div className="container">
+    <div>
       {!isLoggedIn ? (
         <div className="login">
           <div className="login-main">
@@ -122,6 +122,7 @@ function App() {
         </div>
       ) : (
         <>
+        <div className='kingbox'>
           <h1 className="heading">EVENTS</h1>
           {isLoading ? (
             <p>Loading events...</p>
@@ -150,9 +151,11 @@ function App() {
                 {events.map((event, index) => (
                   <SwiperSlide key={index}>
                     <div className="slide-container">
-                      <img src={event.image} alt={event.name} />
-                      <h2>{event.name}</h2>
-                      <p>{event.description}</p>
+                      {/* <img src={event.image} alt={event.name} /> */}
+                      <h2 className='slide-mainheading'>{event.name}</h2>
+                      <h2 className='slide-time'>{event.time}</h2>
+                      <h2 className='slide-venue'>{event.venue}</h2>
+                      <p className='slide-desc'>{event.description}</p>
                       {event.is_live && (
                         <button 
                           className="book-now-btn" 
@@ -172,6 +175,7 @@ function App() {
           ) : (
             <p>No events available.</p>
           )}
+          </div>
         </>
       )}
     </div>
