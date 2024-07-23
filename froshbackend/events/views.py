@@ -157,6 +157,7 @@ def book_ticket(request):
     #user.events.add(event)
     
     serializer = UserSerializer(user)
+    print("ticker booked successfully")
     return Response({
         "message": "Ticket booked successfully",
         "user": serializer.data,

@@ -25,6 +25,7 @@ class LoginView(APIView):
             return Response({'error': 'Invalid credentials'}, status=HTTP_401_UNAUTHORIZED)
         token, _ = Token.objects.get_or_create(user=user)
         serializer = UserSerializer(user)
+        print("success post")
         return Response({
             'token': token.key,
             'user': serializer.data,
