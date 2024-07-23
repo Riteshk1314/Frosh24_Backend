@@ -6,6 +6,7 @@ import 'swiper/css';
 import 'swiper/css/effect-coverflow';
 import 'swiper/css/pagination';
 import 'swiper/css/navigation';
+import './index.css';
 
 SwiperCore.use([EffectCoverflow, Pagination, Navigation]);
 
@@ -90,71 +91,88 @@ function App() {
 
   return (
     <div className="container">
-      <h1 className="heading">EVENTS</h1>
       {!isLoggedIn ? (
-        <form onSubmit={handleSubmit}>
-          <input
-            type="text"
-            value={username}
-            onChange={handleUsernameChange}
-            placeholder="Username"
-          />
-          <input
-            type="password"
-            value={password}
-            onChange={handlePasswordChange}
-            placeholder="Password"
-          />
-          <button type="submit">Login</button>
-        </form>
-      ) : isLoading ? (
-        <p>Loading events...</p>
-      ) : events.length > 0 ? (
-        <>
-          {bookingMessage && <p>{bookingMessage}</p>}
-          <Swiper
-            effect={'coverflow'}
-            grabCursor={true}
-            centeredSlides={true}
-            loop={true}
-            slidesPerView={'auto'}
-            coverflowEffect={{
-              rotate: 0,
-              stretch: 0,
-              depth: 100,
-              modifier: 2.5,
-            }}
-            pagination={{ el: '.swiper-pagination', clickable: true }}
-            navigation={{
-              nextEl: '.swiper-button-next',
-              prevEl: '.swiper-button-prev',
-            }}
-            className="swiper_container"
-          >
-            {events.map((event, index) => (
-              <SwiperSlide key={index}>
-                <div className="slide-container">
-                  <img src={event.image} alt={event.name} />
-                  <h2>{event.name}</h2>
-                  <p>{event.description}</p>
-                  {event.is_live && (
-                    <button 
-                      className="book-now-btn" 
-                      onClick={() => handleBookTicket(event.name)}
-                    >
-                      Book Now
-                    </button>
-                  )}
-                </div>
-              </SwiperSlide>
-            ))}
-            <div className="swiper-pagination"></div>
-            <div className="swiper-button-next"></div>
-            <div className="swiper-button-prev"></div>
-          </Swiper>
-        </>
+        <div className="login">
+          <div className="login-main">
+            <div className="overlay">
+              <div className="box">
+                <form onSubmit={handleSubmit}>
+                  <h4>USERNAME</h4>
+                  <input
+                    type="text"
+                    value={username}
+                    onChange={handleUsernameChange}
+                    placeholder="Username"
+                  />
+                  <h4>PASSWORD</h4>
+                  <input
+                    type="password"
+                    value={password}
+                    onChange={handlePasswordChange}
+                    placeholder="Password"
+                  />
+                  <button type="submit" className="log">Login</button>
+                </form>
+                <a href="#" className="forgot">Forgot Password?</a>
+                <img src="./assets/images/left.png" alt="Left decoration" className="left" />
+                <img src="./assets/images/right.png" alt="Right decoration" className="right" />
+              </div>
+            </div>
+          </div>
+        </div>
       ) : (
-        <p>No events available.</p>
+        <>
+          <h1 className="heading">EVENTS</h1>
+          {isLoading ? (
+            <p>Loading events...</p>
+          ) : events.length > 0 ? (
+            <>
+              {bookingMessage && <p>{bookingMessage}</p>}
+              <Swiper
+                effect={'coverflow'}
+                grabCursor={true}
+                centeredSlides={true}
+                loop={true}
+                slidesPerView={'auto'}
+                coverflowEffect={{
+                  rotate: 0,
+                  stretch: 0,
+                  depth: 100,
+                  modifier: 2.5,
+                }}
+                pagination={{ el: '.swiper-pagination', clickable: true }}
+                navigation={{
+                  nextEl: '.swiper-button-next',
+                  prevEl: '.swiper-button-prev',
+                }}
+                className="swiper_container"
+              >
+                {events.map((event, index) => (
+                  <SwiperSlide key={index}>
+                    <div className="slide-container">
+                      <img src={event.image} alt={event.name} />
+                      <h2>{event.name}</h2>
+                      <p>{event.description}</p>
+                      {event.is_live && (
+                        <button 
+                          className="book-now-btn" 
+                          onClick={() => handleBookTicket(event.name)}
+                        >
+                          Book Now
+                        </button>
+                      )}
+                    </div>
+                  </SwiperSlide>
+                ))}
+                <div className="swiper-pagination"></div>
+                <div className="swiper-button-next"></div>
+                <div className="swiper-button-prev"></div>
+              </Swiper>
+            </>
+          ) : (
+            <p>No events available.</p>
+          )}
+        </>
       )}
     </div>
   );
