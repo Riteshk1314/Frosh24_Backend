@@ -7,6 +7,15 @@
   list-style-type: none;
 }
 
+@font-face {
+  font-family: "BE";
+  src: url("./assets/BigersideExpanded-7O9Z4.otf");
+}
+@font-face {
+  font-family: "AW";
+  src: url("./assets/Audiowide-Regular.otf");
+}
+
 :root {
   --primary: #6a59ff;
   --white: #ffffff;
@@ -72,6 +81,7 @@ body {
   background-image: url(./assets/images/bg.png);
   /* image-resolution: 1920 1080; */
   overflow-x: hidden;
+  width: 100vw;
  background-repeat: no-repeat;
  background-size: cover;
 }
@@ -214,26 +224,26 @@ body {
 
 .swiper_container {
   height: 50rem;
-  padding: 1.5rem 0;
+  padding: 1.5rem 1;
   position: relative;
 }
 
 .swiper-slide {
   width: 7rem;
-  height: 50rem;
+  height: 60rem;
   position: relative;
 }
 
 @media (max-width: 500px) {
   .swiper_container {
-    height: 47rem;
+    height: 40rem;
   }
   .swiper-slide {
-    width: 28rem !important;
+    width: 20rem !important;
     height: 36rem !important;
   }
   .swiper-slide img {
-    width: 28rem !important;
+    width: 20rem !important;
     height: 36rem !important;
   }
 }
@@ -247,8 +257,10 @@ body {
   padding: 30px 20px;
   border-radius: 30px;
 }
+
+
 .carme-regular {
-  font-family: "Carme", sans-serif;
+  font-family: "Carme", sans-seri;
   font-weight: 400;
   font-style: normal;
 }
@@ -363,14 +375,17 @@ body {
   background: var(--primary);
 }
 
-
 .slide-mainheading{
+  font-family: BigersideExpanded ;
+  font-size: 30px;
   color: white;
   font-size: 6rem;
   margin-bottom: 120px;
   
 }
 .slide-desc, .slide-venue, .slide-time{
+  font-family: AW;
+  font-size: 10px;
   color: white;
   font-size: 30px;
   margin-bottom: 20px;
@@ -411,7 +426,7 @@ a{
 /* Navbar  */
 
 .logo {
-  width: 18%;
+  width: 10%;
   display: flex;
   justify-content: center;
 }
@@ -458,7 +473,7 @@ a{
   text-align: right;
   display: flex;
   align-items: center;
-  justify-content: flex-end;
+  /* justify-content: flex-end; */
   padding: 20px;
 }
 
@@ -565,7 +580,7 @@ a{
 
 .fold {
   flex: 1;
-  background: url(./assets/images/Map_draft@4x.png);
+  background: url(./assets/images/mapfinal4@4x.png);
   background-size: cover;
   box-sizing: border-box;
   transition: all 450ms ease-in-out;
@@ -579,8 +594,8 @@ a{
 .fold:nth-child(1)::before {
   content: "";
   position: absolute;
-  height: 207px;
-  width: 95px;
+  height: 234px;
+  width: 107px;
   left: -2px;
   right: 0;
   bottom: -2px;
@@ -601,8 +616,8 @@ a{
 .fold:nth-child(2)::before {
   content: "";
   position: absolute;
-  height: 207px;
-  width: 95px;
+  height: 234px;
+  width: 107px;
   left: 0px;
   right: 0;
   bottom: -2px;
@@ -621,8 +636,8 @@ a{
 .fold:nth-child(3)::before {
   content: "";
   position: absolute;
-  height: 207px;
-  width: 95px;
+  height: 234px;
+  width: 107px;
   left: 0px;
   right: 0;
   bottom: -2px;
@@ -641,8 +656,8 @@ a{
 .fold:nth-child(4)::before {
   content: "";
   position: absolute;
-  height: 207px;
-  width: 95px;
+  height: 234px;
+  width: 107px;
   left: 0px;
   right: 0;
   bottom: -2px;

@@ -13,8 +13,10 @@ const Map = ()=>{
         const foldsElements = document.getElementsByClassName("fold");
         setFolds(Array.from(foldsElements));
 
-
+        window.addEventListener("keydown", handleKeyDown);
     }, []);
+
+
 
     
 
@@ -63,17 +65,17 @@ const Map = ()=>{
 
     const handleKeyDown = (e) => {
         if (e.key === "Escape") {
-        setZoom(0);
-        folds.forEach((fold, index) => {
-            if (index % 2 === 0) {
-            fold.style.transform = `skewY(-45deg)`;
-            fold.style.filter = "brightness(1.25)";
-            } else {
-            fold.style.transform = `skewY(45deg)`;
-            fold.style.filter = "brightness(0.75)";
-            }
-        });
-        setCloseMapVisible(false);
+            setZoom(0);
+            folds.forEach((fold, index) => {
+                if (index % 2 === 0) {
+                fold.style.transform = `skewY(-45deg)`;
+                fold.style.filter = "brightness(1.25)";
+                } else {
+                fold.style.transform = `skewY(45deg)`;
+                fold.style.filter = "brightness(0.75)";
+                }
+            });
+            setCloseMapVisible(false);
         }
     };
 
@@ -85,7 +87,7 @@ const Map = ()=>{
                 document.getElementsByClassName("map")[0].style.height = "60vh"
                 document.getElementById("card").style.rotate = "";
             }
-            document.getElementById("card").style.transform = "scale(1.4)";
+            document.getElementById("card").style.transform = "scale(1)";
             fold.style.transform = `skewY(-45deg)`;
             fold.style.filter = "brightness(1.25)";
         } else {
@@ -105,16 +107,16 @@ const Map = ()=>{
     return(
         <div className="map" id="map">
             <div className={`map-element ${zoom===1?"map-zoomed" : ""}`} >
-                <div class="card" id="card" onClick={handleCardClick} onMouseEnter={handleCardMouseEnter} onMouseLeave={handleCardMouseLeave} >
+                <div class="card" id="card" onClick={zoom==0?handleCardClick:handleCloseMapClick} onMouseEnter={handleCardMouseEnter} onMouseLeave={handleCardMouseLeave} >
                     <div class="fold"></div>
                     <div class="fold"></div>
                     <div class="fold"></div>
                     <div class="fold"></div>
                 </div>
             </div>
-            <div class="closeMap" id="closeMap" style={closeMapVisible?{"display":"block"} : {"display":"none"}} onClick={handleCloseMapClick}>
+            {/* <div class="closeMap" id="closeMap" style={closeMapVisible?{"display":"block"} : {"display":"none"}} onClick={handleCloseMapClick}>
                 <img src={closeBtn} alt=""/>
-            </div>
+            </div> */}
             <div className={`navigate ${closeMapVisible || zoom===1?"navigate-no-display" : ""}`}>
                 <h1>Campus Map</h1>
                 <Link to="/map"><h2>Click Here to Navigate!</h2></Link>

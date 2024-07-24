@@ -2,7 +2,7 @@ import React from 'react'
 import {Link} from 'react-router-dom'
 import Triangle from '../assets/images/triangle.png'
 
-const OurTeam = () => {
+const Desc = () => {
     return (
         <div className='bg-desc' id='about'>
             <div className="frosh-alpha">
@@ -79,4 +79,4 @@ const OurTeam = () => {
 
 }
 
-export default OurTeam
+export default Desc

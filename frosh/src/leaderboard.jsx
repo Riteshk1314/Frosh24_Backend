@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
+import './leaderboard.css';
 
-function Profile() {
+function Dashboard() {
   // State variables to store fetched data
   const [name, setName] = useState('');
   const [regId, setRegId] = useState('');
@@ -40,4 +41,4 @@ function Profile() {
   );
 }
 
-export default Profile;
+export default Dashboard;
