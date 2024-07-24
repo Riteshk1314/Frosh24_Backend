@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'events',
     "users",
+    "hoods",
     
     
     'rest_framework.authtoken',

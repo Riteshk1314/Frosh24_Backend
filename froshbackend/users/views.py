@@ -10,6 +10,7 @@ from rest_framework.status import (
     HTTP_400_BAD_REQUEST,
     HTTP_401_UNAUTHORIZED,
 )
+
 from events.serializers import UserSerializer 
 # Create your views here.
 class LoginView(APIView):
@@ -30,3 +31,10 @@ class LoginView(APIView):
             'token': token.key,
             'user': serializer.data,
         }, status=HTTP_200_OK)
+        
+class userinfo(APIView):
+    def post(self,request):
+        user = request.user
+        serializer = UserSerializer(user)
+        return Response(serializer.data)
+    

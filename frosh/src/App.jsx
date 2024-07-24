@@ -114,8 +114,8 @@ function App() {
                   <button type="submit" className="log">Login</button>
                 </form>
                 <a href="#" className="forgot">Forgot Password?</a>
-                <img src="./assets/images/left.png" alt="Left decoration" className="left" />
-                <img src="./assets/images/right.png" alt="Right decoration" className="right" />
+                <hr class="left"/>
+                <hr class="right"/>
               </div>
             </div>
           </div>
