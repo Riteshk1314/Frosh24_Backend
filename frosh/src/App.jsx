@@ -1,4 +1,9 @@
 import React, { useState, useEffect } from 'react';
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+} from "react-router-dom";
 import axios from 'axios';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import SwiperCore, { EffectCoverflow, Pagination, Navigation } from 'swiper';
@@ -7,6 +12,11 @@ import 'swiper/css/effect-coverflow';
 import 'swiper/css/pagination';
 import 'swiper/css/navigation';
 import './index.css';
+import Nav from './components/nav'
+import Home from './components/Home'
+import Map from './components/Map'
+import Desc from './components/Desc'
+
 
 SwiperCore.use([EffectCoverflow, Pagination, Navigation]);
 
@@ -91,31 +101,39 @@ function App() {
 
   return (
     <div>
+      <Nav/>
+      <Home/>
       {!isLoggedIn ? (
         <div className="login">
           <div className="login-main">
             <div className="overlay">
               <div className="box">
                 <form onSubmit={handleSubmit}>
-                  <h4>USERNAME</h4>
-                  <input
-                    type="text"
-                    value={username}
-                    onChange={handleUsernameChange}
-                    placeholder="Username"
-                  />
-                  <h4>PASSWORD</h4>
-                  <input
-                    type="password"
-                    value={password}
-                    onChange={handlePasswordChange}
-                    placeholder="Password"
-                  />
-                  <button type="submit" className="log">Login</button>
+                  <div className="login-input">
+
+                    <h4>USERNAME</h4>
+                    <input
+                      type="text"
+                      value={username}
+                      onChange={handleUsernameChange}
+                      placeholder="Username"
+                    />
+                  </div>
+                  <div className="login-input">
+                    <h4>PASSWORD</h4>
+                    <input
+                      type="password"
+                      value={password}
+                      onChange={handlePasswordChange}
+                      placeholder="Password"
+                    />
+
+                  </div>
+                  <div className="forgot">
+                    <a href="#" className="forgot">Forgot Password?</a>
+                  </div>
+                    <button type="submit" className="log">Login</button>
                 </form>
-                <a href="#" className="forgot">Forgot Password?</a>
-                <hr class="left"/>
-                <hr class="right"/>
               </div>
             </div>
           </div>
@@ -176,8 +194,13 @@ function App() {
             <p>No events available.</p>
           )}
           </div>
+
+
         </>
       )}
+      <Map/>
+      <Desc/>
+
     </div>
   );
 }

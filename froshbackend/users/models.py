@@ -41,7 +41,7 @@ class User(AbstractUser):
     last_scanned = models.DateTimeField(auto_now=True, blank=True)
     is_scanned = models.BooleanField(default=False)
     is_booked = models.BooleanField(default=False)
-    
+    qr_code_image=models.URLField(blank=True)
     USERNAME_FIELD = "registration_id"
     REQUIRED_FIELDS = ['image', 'qr']
     objects = CustomUserManager()

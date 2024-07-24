@@ -10,15 +10,14 @@ function Profile() {
 
   // Fetch data from /users when the component mounts
   useEffect(() => {
-    fetch('/users')
+    fetch('http://127.0.0.1:8000/users')
       .then(response => response.json())
       .then(data => {
-        // Assuming the API returns an object with name, reg_id, hood, qr_code_image, and dp properties
         setName(data.name);
         setRegId(data.registration_id);
         setHood(data.hood);
         setQrCodeImage(data.qr_code_image);
-        setDp(data.dp);
+        setDp(data.image);
       })
       .catch(error => console.error('Error fetching user data:', error));
   }, []);
