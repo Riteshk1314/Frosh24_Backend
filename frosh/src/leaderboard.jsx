@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './leaderboard.css';
 
-function Dashboard() {
+function Dashboard({ registrationNumber, token }) {
   // State variables to store fetched data
   const [name, setName] = useState('');
   const [regId, setRegId] = useState('');
@@ -9,19 +9,31 @@ function Dashboard() {
   const [qrCodeImage, setQrCodeImage] = useState('');
   const [dp, setDp] = useState('');
 
-  // Fetch data from /users when the component mounts
+  // Fetch data from /user when the component mounts
   useEffect(() => {
-    fetch('http://127.0.0.1:8000/users')
-      .then(response => response.json())
-      .then(data => {
-        setName(data.name);
-        setRegId(data.registration_id);
-        setHood(data.hood);
-        setQrCodeImage(data.qr_code_image);
-        setDp(data.image);
+    if (registrationNumber && token) {
+      fetch(`http://127.0.0.1:8000/user`, {
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Token ${token}`
+        }
       })
-      .catch(error => console.error('Error fetching user data:', error));
-  }, []);
+        .then(response => {
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+          return response.json();
+        })
+        .then(data => {
+          setName(data.name);
+          setRegId(data.registration_id);
+          setHood(data.hood);
+          setQrCodeImage(data.qr_code_image);
+          setDp(data.image);
+        })
+        .catch(error => console.error('Error fetching user data:', error));
+    }
+  }, [registrationNumber, token]);
 
   return (
     <>
