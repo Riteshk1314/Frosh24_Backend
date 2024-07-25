@@ -1,4 +1,5 @@
 import React , {useState, useEffect} from "react";
+import axios from 'axios';
 
 import { Swiper, SwiperSlide } from 'swiper/react';
 import SwiperCore, { EffectCoverflow, Pagination, Navigation } from 'swiper';
@@ -11,8 +12,8 @@ import Home from './Home'
 import Nav from './nav'
 import Map from './Map'
 import Desc from './Desc'
-import Team from './team'
-import Faculty from './faculty'
+
+SwiperCore.use([EffectCoverflow, Pagination, Navigation]);
 
 
 const Landing =()=>{

@@ -4,26 +4,12 @@ import {
   Routes,
   Route,
 } from "react-router-dom";
-import axios from 'axios';
-import { Swiper, SwiperSlide } from 'swiper/react';
-import SwiperCore, { EffectCoverflow, Pagination, Navigation } from 'swiper';
-import 'swiper/css';
-import 'swiper/css/effect-coverflow';
-import 'swiper/css/pagination';
-import 'swiper/css/navigation';
+
 import './index.css';
-import Nav from './components/nav'
-import Home from './components/Home'
-import Map from './components/Map'
-import Desc from './components/Desc'
-import Login from './components/login'
 import Dashboard from './leaderboard'
 import Landing from './components/landing'
 import Faculty from './components/faculty'
 import Team from './components/team'
-
-
-SwiperCore.use([EffectCoverflow, Pagination, Navigation]);
 
 function App() {
 

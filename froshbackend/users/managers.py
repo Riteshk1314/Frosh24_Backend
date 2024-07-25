@@ -36,21 +36,38 @@ class CustomUserManager(BaseUserManager):
     
     
     
-    def generate_and_save_qr_code(self, user):
-        # Import here to avoid circular import
-        from .utils import qr_maker
-        from django.conf import settings
-        import os
+def generate_and_save_qr_code(self, user):
+    # Import here to avoid circular import
+    from .utils import qr_maker
+    from django.conf import settings
+    import os
+    from google.cloud import storage
 
-        qr_value = f"Registration ID: {user.registration_id}"
-        qr_file_path = qr_maker(qr_value, user.registration_id)
+    qr_value = f"Registration ID: {user.registration_id}"
+    qr_file_path = qr_maker(qr_value, user.registration_id)
 
-        relative_path = os.path.join('qr_codes', os.path.basename(qr_file_path))
-        full_path = os.path.join(settings.MEDIA_ROOT, relative_path)
-        os.makedirs(os.path.dirname(full_path), exist_ok=True)
-        os.rename(qr_file_path, full_path)
+    # Initialize Google Cloud Storage client
+    storage_client = storage.Client()
 
-        user.qr = os.path.join(settings.MEDIA_URL, relative_path)
-        user.save(update_fields=['qr'])
+    # Get the bucket
+    bucket_name = 'your-bucket-name'  # Replace with your actual bucket name
+    bucket = storage_client.bucket(bucket_name)
+
+    # Define the destination blob name (file path in GCS)
+    destination_blob_name = f'qr_codes/{user.registration_id}.png'
+
+    # Create a blob object and upload the file
+    blob = bucket.blob(destination_blob_name)
+    blob.upload_from_filename(qr_file_path)
+
+    # Generate a public URL (if your bucket is configured for public access)
+    gcs_url = f'https://storage.googleapis.com/{bucket_name}/{destination_blob_name}'
+
+    # Update user's qr field with the GCS URL
+    user.qr = gcs_url
+    user.save(update_fields=['qr'])
+
+    # Delete the local file after upload
+    os.remove(qr_file_path)
         
     

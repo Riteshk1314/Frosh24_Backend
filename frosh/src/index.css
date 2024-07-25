@@ -13,7 +13,7 @@
 }
 @font-face {
   font-family: "AW";
-  src: url("./assets/Audiowide-Regular.otf");
+  src: url("./assets/Audiowide-Regular.ttf");
 }
 
 :root {
@@ -198,23 +198,22 @@ body {
   padding: 8px 20px;
   opacity: 0.8;
 }
+
 .left {
   width: 85px;
   position: absolute;
-  top: 82%;
-  left: 20%;
+  top: 50%;
+  left: 10%;
   transform: translate(-50%, -50%);
 }
+
 .right {
   width: 85px;
   position: absolute;
-  top: 82%;
-  left: 80%;
+  top: 50%;
+  left: 90%;
   transform: translate(-50%, -50%);
 }
-
-
-
 
 .heading {
   padding: 1rem 0;
@@ -224,28 +223,31 @@ body {
 
 .swiper_container {
   height: 50rem;
-  padding: 1.5rem 1;
+  padding: 3rem 0;
   position: relative;
 }
 
 .swiper-slide {
-  width: 7rem;
-  height: 60rem;
+  width: 37rem;
+  height: 42rem;
   position: relative;
 }
 
 @media (max-width: 500px) {
   .swiper_container {
-    height: 40rem;
+    height: 20rem;
   }
   .swiper-slide {
-    width: 20rem !important;
+    width: 10rem !important;
     height: 36rem !important;
   }
   .swiper-slide img {
     width: 20rem !important;
     height: 36rem !important;
   }
+}
+.swiper-3d{
+  perspective: 100px;
 }
 
 .slide-container {
@@ -254,46 +256,42 @@ body {
   background-size: cover;
   height: 400px;
   width: 340px;
-  padding: 30px 20px;
+  padding: 10px;
   border-radius: 30px;
+  margin: 2px 1px;
 }
 
-
 .carme-regular {
-  font-family: "Carme", sans-seri;
+  font-family: "Carme", sans-serif;
   font-weight: 400;
   font-style: normal;
 }
-
 
 .book-now-btn {
   position: absolute;
   bottom: 10px;
   right: 35px;
-  
   z-index: 1;
   font-family: 'poppins';
-  /* padding: 2px; */
-  /* background-color: #073733; */
-  background-image: url(./assets/images/bg-2.png) ;
+  background-image: url(./assets/images/bg-2.png);
   border-radius: 30px;
   width: 139px;
   height: 35px;
   color: #f5f5f5;
   font-size: 20px;
   font-family: 'carme';
-  
 }
-.book-now-btn:hover{
+
+.book-now-btn:hover {
   color: aqua;
 }
+
 .swiper-slide img {
-  width: 37rem;
+  width: 10rem;
   height: 42rem;
   border-radius: 5rem;
-  object-fit:contain;
-  
-  
+  object-fit: contain;
+  margin-right: -5px;
 }
 
 .swiper-slide-shadow-left,
@@ -310,45 +308,45 @@ body {
 }
 
 .slider-controler .swiper-button-next {
-  left: 58% !important;
-  transform: translateX(-58%) !important;
+  left: auto !important;
+  right: 10% !important;
+  transform: translateX(0) !important;
 }
 
 @media (max-width: 990px) {
   .slider-controler .swiper-button-next {
-    left: 70% !important;
-    transform: translateX(-70%) !important;
+    right: 5% !important;
   }
 }
 
 @media (max-width: 450px) {
   .slider-controler .swiper-button-next {
-    left: 80% !important;
-    transform: translateX(-80%) !important;
+    right: 2% !important;
   }
+}
+
+.slider-controler .swiper-button-prev {
+  left: 10% !important;
+  transform: translateX(0) !important;
 }
 
 @media (max-width: 990px) {
   .slider-controler .swiper-button-prev {
-    left: 30% !important;
-    transform: translateX(-30%) !important;
+    left: 5% !important;
   }
 }
 
 @media (max-width: 450px) {
   .slider-controler .swiper-button-prev {
-    left: 20% !important;
-    transform: translateX(-20%) !important;
+    left: 2% !important;
   }
 }
 
 .slider-controler .slider-arrow {
   background: var(--white);
-  width: 3.5rem;
-  height: 3.5rem;
+  width: 2.5rem;
+  height: 2.5rem;
   border-radius: 50%;
-  left: 42%;
-  transform: translateX(-42%);
   filter: drop-shadow(0px 8px 24px rgba(18, 28, 53, 0.1));
 }
 
@@ -363,7 +361,7 @@ body {
 
 .swiper-pagination {
   position: relative;
-  width: 15rem !important;
+  width: rem !important;
   bottom: 1rem;
 }
 
@@ -375,23 +373,21 @@ body {
   background: var(--primary);
 }
 
-.slide-mainheading{
-  font-family: BigersideExpanded ;
-  font-size: 30px;
+.slide-mainheading {
+  font-family: BigersideExpanded;
+  font-size: 48px;
   color: white;
-  font-size: 6rem;
   margin-bottom: 120px;
-  
 }
-.slide-desc, .slide-venue, .slide-time{
+
+.slide-desc, .slide-venue, .slide-time {
   font-family: AW;
-  font-size: 10px;
-  color: white;
   font-size: 30px;
+  color: white;
   margin-bottom: 20px;
 }
 
-.kingbox{
+.kingbox {
   height: 100vh;
   overflow: hidden;
 }
