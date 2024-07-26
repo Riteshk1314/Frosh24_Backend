@@ -785,3 +785,14 @@ p {
   width: 10vw
 }
 
+span.compass{
+  position: fixed;
+  bottom: 0vh;
+  top: 0vh;
+  left: 10px;
+  right: 0vw;
+  z-index: -1;
+  width: 100vw;
+  height: 100vh;
+
+}

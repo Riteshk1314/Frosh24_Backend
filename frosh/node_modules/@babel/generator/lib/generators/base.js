@@ -48,11 +48,12 @@ function BlockStatement(node) {
       this.newline(newline);
     }
   }
+  const exit = this.enterForStatementInit(false);
   this.printSequence(node.body, node, {
     indent: true
   });
-  this.sourceWithOffset("end", node.loc, 0, -1);
-  this.rightBrace();
+  exit();
+  this.rightBrace(node);
 }
 function Directive(node) {
   this.print(node.value, node);
