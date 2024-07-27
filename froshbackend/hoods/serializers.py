@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from .models import Hood
-from ..users.models import User
+from users.models import User
 
 class HoodSerializer(serializers.ModelSerializer):
     class Meta:

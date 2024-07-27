@@ -240,7 +240,7 @@ def qr_scanner_view(request):
             
             try:
                 user_id = qr_data
-                user = User.objects.get(registration_id=user_id)
+                user = User.objects.get(secure_id=user_id)
                 if(user.is_scanned==False):
                     user.last_scanned = timezone.now()
                     user.save()

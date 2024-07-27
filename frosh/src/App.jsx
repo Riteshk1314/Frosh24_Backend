@@ -4,12 +4,19 @@ import {
   Routes,
   Route,
 } from "react-router-dom";
-
 import './index.css';
+import './media.css'
+// import Login from './components/login'
 import Dashboard from './leaderboard'
 import Landing from './components/landing'
 import Faculty from './components/faculty'
 import Team from './components/team'
+import Events from './components/events';
+
+
+
+
+
 
 function App() {
 
@@ -20,6 +27,7 @@ function App() {
         <Route exact path="/faculty" element={ <Faculty/> } />
         <Route exact path="/team" element={ <Team/> } />
         <Route exact path="/dashboard" element={ <Dashboard/> } />
+        <Route exact path='/events' element={ <Events/> } />
       </Routes>
 
 

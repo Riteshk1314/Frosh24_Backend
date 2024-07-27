@@ -20,7 +20,7 @@ import os
 from .utils import qr_maker
 from django.core.mail import send_mail
 from .utils import send_credentials_email
-
+from hoods.models import Hood
 def default_events():
     return []
 logger = logging.getLogger(__name__)
@@ -45,27 +45,34 @@ class User(AbstractUser):
     USERNAME_FIELD = "registration_id"
     REQUIRED_FIELDS = ['image', 'qr']
     objects = CustomUserManager()
+    hood = models.ForeignKey(
+        Hood,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='users'
+    )
 
-    def generate_qr_code(self):
-        try:
-            qr_value = f"{self.registration_id}"
-            logger.info(f"Creating QR code with value: {qr_value}")
-            qr_file_path = qr_maker(qr_value, self.registration_id)
-            logger.info(f"QR code created at: {qr_file_path}")
+    # def generate_qr_code(self):
+    #     try:
+    #         qr_value = f"{self.registration_id}"
+    #         logger.info(f"Creating QR code with value: {qr_value}")
+    #         qr_file_path = qr_maker(qr_value, self.registration_id)
+    #         logger.info(f"QR code created at: {qr_file_path}")
             
-            relative_path = os.path.join('qr_codes', os.path.basename(qr_file_path))
-            full_path = os.path.join(settings.MEDIA_ROOT, relative_path)
+    #         relative_path = os.path.join('qr_codes', os.path.basename(qr_file_path))
+    #         full_path = os.path.join(settings.MEDIA_ROOT, relative_path)
             
-            logger.info(f"Creating directory: {os.path.dirname(full_path)}")
-            os.makedirs(os.path.dirname(full_path), exist_ok=True)
+    #         logger.info(f"Creating directory: {os.path.dirname(full_path)}")
+    #         os.makedirs(os.path.dirname(full_path), exist_ok=True)
             
-            logger.info(f"Moving file from {qr_file_path} to {full_path}")
-            os.rename(qr_file_path, full_path)
+    #         logger.info(f"Moving file from {qr_file_path} to {full_path}")
+    #         os.rename(qr_file_path, full_path)
             
-            return os.path.join(settings.MEDIA_URL, relative_path)
-        except Exception as e:
-            logger.error(f"Error generating QR code: {str(e)}")
-            raise
+    #         return os.path.join(settings.MEDIA_URL, relative_path)
+    #     except Exception as e:
+    #         logger.error(f"Error generating QR code: {str(e)}")
+    #         raise
 
     def save(self, *args, **kwargs):
         is_new = self._state.adding

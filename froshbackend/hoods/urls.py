@@ -1,6 +1,8 @@
 from django.urls import path
-from . import views
+from hoods import views
 
 urlpatterns = [
-    path('leaderboard/', views.boh_leaderboard)
+    path('dashboard/', views.hood_leaderboard)
+    # path('')
 ]
+
