@@ -25,7 +25,7 @@ const Map = ()=>{
         folds.forEach((fold, index) => {
         if (index % 2 === 0) {
             if(width>395 && width<=450){
-                document.getElementsByClassName("map")[0].style.height = "80vh"
+                document.getElementsByClassName("map")[0].style.height = "105vh"
                 document.getElementById("card").style.transform = "scale(4.4) rotate(90deg)";
             }
             else if(width<395){
@@ -65,27 +65,52 @@ const Map = ()=>{
 
     const handleKeyDown = (e) => {
         if (e.key === "Escape") {
-            setZoom(0);
+            // setZoom(0);
+            // folds.forEach((fold, index) => {
+            //     if (index % 2 === 0) {
+            //         document.querySelector('.card').style.transform = 'scale(1)'
+            //         fold.style.transform = `skewY(-45deg)`;
+            //         fold.style.filter = "brightness(1.25)";
+            //     } else {
+            //         fold.style.transform = `skewY(45deg)`;
+            //         fold.style.filter = "brightness(0.75)";
+            //     }
+            // });
+            // setCloseMapVisible(false);
+
+            setCloseMapVisible(false);
             folds.forEach((fold, index) => {
-                if (index % 2 === 0) {
+            if (index % 2 === 0) {
+                if(width<=450){
+                    document.getElementsByClassName("map")[0].style.height = "92vh"
+                    document.getElementById("card").style.rotate = "";
+                    document.getElementById("card").style.transform = "scale(1.5)";
+                }
+                else{
+
+                    document.getElementById("card").style.transform = "scale(1)";
+                }
                 fold.style.transform = `skewY(-45deg)`;
                 fold.style.filter = "brightness(1.25)";
-                } else {
+            } else {
                 fold.style.transform = `skewY(45deg)`;
                 fold.style.filter = "brightness(0.75)";
-                }
+            }
             });
-            setCloseMapVisible(false);
-        }
-    };
+            setTimeout(() => {
+            setZoom(0);
+            }, 500);
+            }
+        };
 
     const handleCloseMapClick = () => {
         setCloseMapVisible(false);
         folds.forEach((fold, index) => {
         if (index % 2 === 0) {
             if(width<=450){
-                document.getElementsByClassName("map")[0].style.height = "60vh"
+                document.getElementsByClassName("map")[0].style.height = "92vh"
                 document.getElementById("card").style.rotate = "";
+                document.getElementById("card").style.transform = "scale(1.5)";
             }
             document.getElementById("card").style.transform = "scale(1)";
             fold.style.transform = `skewY(-45deg)`;
@@ -100,12 +125,9 @@ const Map = ()=>{
         }, 500);
     };
 
-    const navigateHover=()=>{
-
-    }
 
     return(
-        <div className="map" id="map">
+        <div className="map" data-section id="map" onClick={zoom==1 ? handleCloseMapClick : ""} >
             <div className={`map-element ${zoom===1?"map-zoomed" : ""}`} >
                 <div class="card" id="card" onClick={zoom==0?handleCardClick:handleCloseMapClick} onMouseEnter={handleCardMouseEnter} onMouseLeave={handleCardMouseLeave} >
                     <div class="fold"></div>
@@ -119,7 +141,7 @@ const Map = ()=>{
             </div> */}
             <div className={`navigate ${closeMapVisible || zoom===1?"navigate-no-display" : ""}`}>
                 <h1>Campus Map</h1>
-                <Link to="/map"><h2>Click Here to Navigate!</h2></Link>
+                <a href="/map" target="_blank"><h2>Click Here to Navigate!</h2></a>
             </div>
 
         </div>        

@@ -4,7 +4,7 @@ import Triangle from '../assets/images/triangle.png'
 
 const Desc = () => {
     return (
-        <div className='bg-desc' id='about'>
+        <div data-section className='bg-desc' id='about'>
             <div className="frosh-alpha">
                 <div className="three">
                     <div className="one" >F</div>   

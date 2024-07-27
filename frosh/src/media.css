@@ -81,6 +81,7 @@
     }
     .v-class-resp{
         opacity:0;
+        display: none;
     }
 
     .container{
@@ -262,8 +263,8 @@
         width: 30%;
     } */
     .member {
-        width: 112px;
-        height: 167px;
+        width: 180px;
+        height: 222px;
     }
 }
 
@@ -272,32 +273,38 @@
 /* Our Team  */
 
 @media only screen and (max-width: 500px){
-    .home{
-        height: 50vh;
+    .home {
+        height: 95vh;
         width: 100vw;
     }
     .frosh-main-img {
-        height: 35%;
+        height: 21%;
         width: 100%;
     }
 
-    .frosh-tag{
-        font-size: 0.6rem;
+    .frosh-tag > h1{
+        font-size: 1.1rem;
         
     }
 
     .navbar {
         align-items: flex-start;
+        height: 622px;
+    }
+
+    .h-nav-resp{
+        height: 90px;
     }
 
     .logo {
-        width: 25%;
+        width: 39%;
         padding: 27px 18px;
     }
 
     .nav-list{
         width: 100%;
     }
+
 
     .rightNav {
         /* background-color: wheat; */
@@ -307,11 +314,8 @@
         padding: 20px 0;
     }
 
-    .bg-ourTeam{
-        height: 207vh;
-    }
     .frosh-alpha {
-        height: 65%;
+        height: 75%;
         flex-direction: column;
     }
     .three{
@@ -326,14 +330,14 @@
         width: 25%;
     }
     .two {
-        justify-content: flex-end;
+        justify-content: center;
         align-items: flex-start;
         height: 100%;
         width: 50%;
     }
-    p {
-        width: 100%;
-        height: 60%;
+    .two > p {
+        width: 95%;
+        height: 40%;
     }
     .faculty-team {
         flex-direction: column;
@@ -343,6 +347,10 @@
     }
     .desc-head{
         margin-bottom: 7px;
+    }
+
+    .bg-desc {
+        height: 150vh;
     }
 
     .bg-triangle {
@@ -356,7 +364,7 @@
     }
 
     .card{
-        scale: 1.3;
+        scale: 1.5;
         /* rotate: 90deg; */
     }
 
@@ -368,7 +376,7 @@
         display: none;
     }
     .map {
-        height: 60vh;
+        height: 92vh;
     }
 
 
@@ -424,7 +432,7 @@
     .section-faculty h1 {
         margin-top: 65px;
         margin-bottom: 60px;
-        font-size: 70px;
+        font-size: 50px;
     }
     .faculty-members {
         gap: 70px;
@@ -438,15 +446,48 @@
     }
     
     .section-team > h1 {
-        font-size: 60px;
+        font-size: 50px;
+    }
+
+    .faculty-members> .member > .name {
+        font-size: 0.6rem;
     }
     
+    /* login  */
+
+    .button3 {
+        padding: 0.5em;
+        width: 100%;
+        height: 10%;
+    }
+
+    .field {
+        padding: 0.3em;
+        width: 78%;
+        height: 11%;
+    }
+
+    .login> form {
+        padding-left: 1em;
+        padding-right: 1em;
+        padding-bottom: 0.4em;
+        height: 55%;
+        width: 77%;
+    }
+    .login {
+        height: 95vh;
+        width: 100vw;
+    }
+    .section-team > .members > .member> .name{
+        font-size: 10px;
+    }
+
 
 }
 
 @media only screen and (max-width: 420px) {
     .bg-faculty {
-        height: 270vh;
+        height: 240vh;
     }
     .member{
         width: 175px;
@@ -459,7 +500,7 @@
         font-size: 7rem;
     }
     .two {
-        justify-content: flex-end;
+        justify-content: center;
         height: 100%;
         width: 60%;
         font-size: 1rem;
@@ -479,11 +520,11 @@
         height: 316vh;
     }
     .frosh-main-img {
-        height: 40%;
+        height: 21%;
         width: 100%;
     }
-    .frosh-tag {
-        font-size: 0.5rem;
+    .frosh-tag > h1 {
+        font-size: 0.9rem;
     }
     .bg-faculty{
         height: 260vh;
@@ -499,7 +540,7 @@
         font-size: 10px;
     }
     .bg-faculty {
-        height: 381vh;
+        height: 350vh;
     }
     .member {
         width: 207px;
@@ -512,8 +553,8 @@
 }
 
 @media only screen and (max-width: 365px){
-    .bg-faculty {
-        height: 348vh;
+    .bg-faculty {   
+        height: 315vh;
     }
     .closeMap {
         bottom: -35%;
@@ -524,7 +565,7 @@
         height: 291vh;
     }
     .frosh-main-img {
-        height: 35%;
+        height: 18%;
         width: 100%;
     }
     .closeMap {

@@ -7,7 +7,7 @@ const Home =()=>{
 
             </div>
             <div className="frosh-tag">
-                <h1>Navigating Through Timeless Trails</h1>
+                <h1>NAVIGATING THROUGH TIMELESS TRAILS</h1>
             </div>
         </div>
     )

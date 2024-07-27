@@ -1,64 +1,80 @@
 @font-face {
-    font-family: biger;
-    src: url(./assets/fonts/BigersideExpanded-7O9Z4.otf);
-  }
-@font-face {
-    font-family: big;
-    src: url(./assets/fonts/BigShouldersText-VariableFont_wght.ttf);
+  font-family: biger;
+  src: url(./assets/BigersideExpanded-7O9Z4.otf);
 }
+@font-face {
+  font-family: big;
+  src: url(./assets/BigShouldersText-VariableFont_wght.ttf);
+}
+*{margin: 0;
+  box-sizing: border-box;
+  padding: 0;
+}
+
 
 .qr_code{
 
-    position: absolute;
-    width: 260px;
-    height: 260px;
-    left: 1043px;
-    top: 200px;
-    background: url(./assets/qr_img_frosh.png);
-    border: 7px solid #000000;
-    border-radius: 28px;
-    
-    
+position: absolute;
+width: 260px;
+height: 260px;
+left:1000px;
+top: 200px;
+background-size: contain;
+
+border-radius: 28px;
 }
+
+
 .profile_img{
-      
-    position: absolute;
-      width: 350px;
-      height: 500px;
-      left: 87px;
-      top: 90px;
-      background: url(./assets/ritesh.jpeg), #D9D9D9;
-      background-size:cover;
-      border: 3px solid #000000;
-      box-shadow: -12px 26px 64.6px 22px rgba(0, 0, 0, 0.25);
-      border-radius: 37px;
-    
-    }
-    
-    .info{
-    position: absolute;
-    width: 371px;
-    height: 163px;
-    left: 467px;
-    top: 200px;
-    }
-    
-    h1{
-      font-family: biger;
-      width: auto;
-    }
-    h2{
-      font-family: big;
-    }
+  
+  position: absolute;
+  width: 350px;
+  height: 500px;
+  left: 87px;
+  top: 90px;
+  background-size:cover ;
+  border: 3px solid #000000;
+  box-shadow: -12px 26px 64.6px 22px rgba(0, 0, 0, 0.25);
+  border-radius: 37px;
 
-    .frosh_logo{
-        background: url(./assets/frosh.png);
-        height: 284px;
-        width: 150px;
-        z-index: 1;
-        background-size:contain;
-        background-repeat: no-repeat;
-        top: 1%;
-        position: absolute;
-      }
+}
 
+.container-dashboard{
+  background: white;
+  height: 90vh;
+}
+
+.info{
+position: absolute;
+width: 371px;
+height: 163px;
+left: 467px;
+top: 200px;
+}
+
+.profile_img > .info > h1{
+  font-family: biger;
+  width: auto;
+  color: black;
+}
+.profile_img > .info > h2{
+  font-family: big;
+}
+.navbar-dashboard{
+width: 100vw;
+height: 10vh;
+background-color: black;
+display: flex;
+justify-content: center;
+}
+
+.frosh_logo{
+  background: url(./assets/images/frosh.png);
+  height: 284px;
+  width: 150px;
+  z-index: 1;
+  background-size:contain;
+  background-repeat: no-repeat;
+  top: 1%;
+  position: absolute;
+}
