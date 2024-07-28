@@ -513,6 +513,8 @@ a{
 
 .frosh-tag{
   font-family: rasputin;
+  position: relative;
+  top: 20%;
 }
 
 /* Map  */
@@ -791,8 +793,18 @@ span.compass{
   top: 0vh;
   left: 10px;
   right: 0vw;
-  z-index: -1;
+  z-index: 0;
   width: 100vw;
   height: 100vh;
+
+}
+.main_landing{
+  background: url(./assets/frsh.png);
+  position: relative;
+  top: 1%;
+  left: 0.6%;
+  height: 40%;
+  width: 50%;
+  background-size: contain;
 
 }
