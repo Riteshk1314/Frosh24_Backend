@@ -4,7 +4,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from django.contrib.auth import authenticate
 from rest_framework.decorators import api_view
-from hoods.models import Hood 
+from hoods.models import Hoods
 from django.contrib.auth import authenticate
 from rest_framework.permissions import AllowAny
 from rest_framework.permissions import IsAuthenticated

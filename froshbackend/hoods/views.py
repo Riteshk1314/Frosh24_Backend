@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.shortcuts import  HttpResponse, redirect
-from hoods.models import Hood
+from hoods.models import Hoods
 import random
 import string
 import json
@@ -12,7 +12,7 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status
-from hoods.models import Hood
+from hoods.models import Hoods
 from users.models import User
 from hoods.serializers import HoodSerializer, UserSerializer
 from django.db import transaction
@@ -76,7 +76,7 @@ def hood_leaderboard(request):
     if not user_hood:
         return Response({"error": "User is not assigned to any hood"}, status=status.HTTP_404_NOT_FOUND)
 
-    all_hoods = Hood.objects.all().order_by('-points')
+    all_hoods = Hoods.objects.all().order_by('-points')
     serializer = HoodSerializer(all_hoods, many=True)
 
     response_data = {
@@ -86,7 +86,7 @@ def hood_leaderboard(request):
         },
         "profile_photo": user.image,
         "secure_id":user.secure_id,
-        "qr": user.qr,
-        "all_hoods": serializer.data
+        # "qr": user.qr,
+        "all_hoodss": serializer.data
     }
     return Response(response_data)

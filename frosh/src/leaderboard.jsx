@@ -11,6 +11,7 @@ function Dashboard() {
   const [secure_id, setSecure_id] = useState('');
   const [allHoods, setAllHoods] = useState([]);
   const [username, setUsername] = useState('');
+  const [leaderboard, setLeaderboard] = useState([]);
 
   // Fetch data from /dashboard when the component mounts
   useEffect(() => {
@@ -41,6 +42,7 @@ function Dashboard() {
         setQrCode(response.data.qr);
         setAllHoods(response.data.all_hoods);
         setSecure_id(response.data.secure_id);
+        
         console.log(response.data.user_hood.name );
         console.log(response.data.user_hood.id );
         console.log(response.data.profile_photo );
@@ -50,6 +52,7 @@ function Dashboard() {
         console.error('Error fetching user data:', error);
       }
     };
+
 
     fetchData();
   }, []);
@@ -62,9 +65,9 @@ function Dashboard() {
       <div className='container-dashboard'>
         <img src={profilePhoto} alt="Profile" className='profile_img' />
         <div className='info'>
-          <h1>USERNAME: {username}</h1>
-          <h2>HOOD NAME: {hoodName}</h2>
-          <h2>HOOD ID: {hoodId}</h2>
+          <h3>Registration ID: {username}</h3>
+          <h3>HOOD NAME: {hoodName}</h3>
+          <h3>HOOD ID: {hoodId}</h3>
         </div>
 
 
@@ -77,7 +80,32 @@ function Dashboard() {
     value={secure_id}
     viewBox={`0 0 256 256`}
   />
+
+
+<div className='leaderboard'>
+  <h2>Hood Leaderboard</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Rank</th>
+          <th>Hood Name</th>
+          <th>Points</th>
+        </tr>
+      </thead>
+      <tbody>
+        {leaderboard.map((hood, index) => (
+          <tr key={hood.id} className={hood.name === hoodName ? 'current-user-hood' : ''}>
+            {/* <td>{index + 1}</td> */}
+            <td>{hood.name}</td>
+            <td>{hood.points}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
 </div>
+
+</div>
+
       </div>
       {/* You can add a section to display all hoods if needed */}
       {/* <div className='all-hoods'>
@@ -88,6 +116,7 @@ function Dashboard() {
           ))}
         </ul>
       </div> */}
+
     </>
   );
 }

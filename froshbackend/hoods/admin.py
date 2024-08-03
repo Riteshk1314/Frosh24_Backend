@@ -1,6 +1,6 @@
 from django.contrib import admin
 
 # Register your models here.
-from .models import Hood
+from .models import Hoods
 
-admin.site.register(Hood)
+admin.site.register(Hoods)

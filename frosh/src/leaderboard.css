@@ -40,11 +40,12 @@ border-radius: 28px;
 }
 
 .container-dashboard{
-  background: white;
+  background: rgb(161, 144, 144);
   height: 90vh;
 }
 
 .info{
+
 position: absolute;
 width: 371px;
 height: 163px;

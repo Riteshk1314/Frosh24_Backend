@@ -1,4 +1,8 @@
 froshbackend/froshbackend/__pycache__
 froshbackend/events/__pycache__
+froshbackend/users/__pycache__
+froshbackend/hoods/__pycache__
+froshbackend/users/__pycache__
+froshbackend/__pycache__
 .env
 frosh/node_modules

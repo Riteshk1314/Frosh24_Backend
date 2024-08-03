@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from .serializers import eventSerializer, UserSerializer
-from .models import Events
+from events.models import Events, passes
 from django.shortcuts import render
 from django.http import JsonResponse
 from django.http import HttpResponse
@@ -61,7 +61,7 @@ import json
 import threading
 from django.views.decorators import gzip
 from django.http import StreamingHttpResponse
-
+from django.db import transaction
 
 # backends = [cv2.CAP_DSHOW, cv2.CAP_MSMF, cv2.CAP_VFW]
 
@@ -130,34 +130,58 @@ from django.utils import timezone
 
 
 
+
 @api_view(['POST'])
+@transaction.atomic
 @permission_classes([IsAuthenticated])
 def book_ticket(request):
     user = request.user
     name = request.data.get('name')
+    event = get_object_or_404(Events, name=name, is_live=True)
     registration_number = request.data.get('registration_number')
+    secure_id=user.secure_id
+    print(registration_number)
+    print(secure_id)
+    print(event.name)
+    
+    
     if not name or not registration_number:
         return Response({"error": "Event ID and registration number are required"}, status=status.HTTP_400_BAD_REQUEST)
     
-    if user.is_booked:
+    if (passes.objects.filter(
+                    secure_id=secure_id,
+                    event=event,)):
         return Response({"error": "User already has a booked ticket"}, status=status.HTTP_400_BAD_REQUEST)
     
-    event = get_object_or_404(Events, name=name, is_live=True)
+    
+    
+    if not name or not registration_number:
+        return Response({"error": "Event ID and registration number are required"}, status=status.HTTP_400_BAD_REQUEST)
+    
+    # if new_pass.is_booked:
+    #     return Response({"error": "User already has a booked ticket"}, status=status.HTTP_400_BAD_REQUEST)
+    
     
     if event.available_tickets <= 0:
+        
         return Response({"error": "No tickets available for this event"}, status=status.HTTP_400_BAD_REQUEST)
     
-    user.is_booked = True
-    user.registration_number = registration_number
-    user.save()
+    # Generate a new pass
     
-    event.available_tickets -= 1
-    event.save()
+    if event.available_tickets>=0 :
+        with transaction.atomic():
+            new_pass = passes.objects.create(event=event,secure_id=user.secure_id)
+            new_pass.is_booked = True
+            new_pass.save()
+            user.save()
+            event.available_tickets -= 1
+            event.save()
+            
     
     #user.events.add(event)
     
     serializer = UserSerializer(user)
-    print("ticker booked successfully")
+    print("ticket booked successfully")
     return Response({
         "message": "Ticket booked successfully",
         "user": serializer.data,
@@ -166,8 +190,6 @@ def book_ticket(request):
             "available_tickets": event.available_tickets
         }
     }, status=status.HTTP_200_OK)
-
-
 
 
 # class VideoCamera:
@@ -229,7 +251,6 @@ import traceback
 @csrf_exempt
 def qr_scanner_view(request):
     if request.method == 'GET':
-       
         return render(request, 'website/qr_scanner.html')
     elif request.method == 'POST':
         try:
@@ -237,24 +258,36 @@ def qr_scanner_view(request):
             qr_data = data.get('qr_data')
             
             print(f"Received QR data: {qr_data}")
-            
             try:
-                user_id = qr_data
-                user = User.objects.get(secure_id=user_id)
-                if(user.is_scanned==False):
-                    user.last_scanned = timezone.now()
-                    user.save()
-                    user.is_scanned=True
-                    user.save()
+                print("this try")
+                secure_id = qr_data
+                print(secure_id)
+                user = User.objects.filter(secure_id=secure_id)
+                print(user)
+                event = Events.objects.filter(is_live=True).first()
+                print(event)
+                
+                
+                event_pass = passes.objects.filter(
+                event=event,secure_id=secure_id).first()
+                print(event_pass)
+
+                if(event_pass.is_scanned==False):
+                    event_pass.last_scanned = timezone.now()
+                    event_pass.save()
+                    event_pass.is_scanned=True
+                    event_pass.save()
                     
-                    print(f"scan success of {user.registration_id}")
+                    # print(f"scan success of {user.registration_id}")
                 
                     return JsonResponse({
+            
                         'success': True,
-                        'registration_id': user.registration_id,
-                        'is_scanned': user.is_scanned,
-                        'is_booked': user.is_booked,
-                        'last_scanned': user.last_scanned.isoformat(),
+                        # 'registration_id': event_pass.registration_id,
+                        'image':user.image,
+                        'is_scanned': event_pass.is_scanned,
+                        'is_booked': event_pass.is_booked,
+                        'last_scanned': event_pass.last_scanned.isoformat(),
                         'message': 'User information retrieved successfully'
                     })
                 
@@ -269,7 +302,7 @@ def qr_scanner_view(request):
                 return JsonResponse({
                     'success': False,
                     'error': f'Invalid user ID format: {qr_data}',
-                    'message': 'The QR code should contain a numeric user ID'
+                    'message': 'The QR code should contain a  secure ID'
                 }, status=400)
             
         except json.JSONDecodeError:

@@ -1,10 +1,10 @@
 from rest_framework import serializers
-from .models import Hood
+from .models import Hoods
 from users.models import User
 
 class HoodSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Hood
+        model = Hoods
         fields = ['id', 'name', 'points']
 
 class UserSerializer(serializers.ModelSerializer):

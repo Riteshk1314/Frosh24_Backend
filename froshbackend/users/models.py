@@ -20,7 +20,7 @@ import os
 from .utils import qr_maker
 from django.core.mail import send_mail
 from .utils import send_credentials_email
-from hoods.models import Hood
+from hoods.models import Hoods
 def default_events():
     return []
 logger = logging.getLogger(__name__)
@@ -31,22 +31,24 @@ def generate_random_password():
 logger = logging.getLogger(__name__)
 
 class User(AbstractUser):
+    
     username = None
     password = models.CharField(blank=True, max_length=128)
     image = models.URLField(blank=True)
     registration_id = models.CharField(unique=True, max_length=20)
-    secure_id = models.CharField(unique=True, max_length=8, null=True, blank=True)
+    secure_id = models.AutoField( primary_key=True, blank=False)
     events = ArrayField(base_field=models.CharField(max_length=60), max_length=50, blank=True, default=list)
-    qr = models.URLField(blank=True)
-    last_scanned = models.DateTimeField(auto_now=True, blank=True)
-    is_scanned = models.BooleanField(default=False)
-    is_booked = models.BooleanField(default=False)
-    qr_code_image=models.URLField(blank=True)
+    email=models.EmailField()
+    # qr = models.URLField(blank=True)
+    # last_scanned = models.DateTimeField(auto_now=True, blank=True)
+    # is_scanned = models.BooleanField(default=False)
+    # is_booked = models.BooleanField(default=False)
+    # qr_code_image=models.URLField(blank=True)
     USERNAME_FIELD = "registration_id"
-    REQUIRED_FIELDS = ['image', 'qr']
+    # REQUIRED_FIELDS = ['image', 'qr']
     objects = CustomUserManager()
-    hood = models.ForeignKey(
-        Hood,
+    hood_name = models.ForeignKey(
+        Hoods,
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
@@ -79,16 +81,16 @@ class User(AbstractUser):
         update_fields = kwargs.get('update_fields', None)
 
         if is_new:
-            if not self.secure_id:
-                self.secure_id = generate_user_secure_id()
+            # if not self.secure_id:
+            #     self.secure_id = generate_user_secure_id()
             
             raw_password = None
             if not self.password:
                 raw_password = generate_random_password()
                 self.set_password(raw_password)
 
-            if not self.qr:
-                self.qr = self.generate_qr_code()
+            # if not self.qr:
+            #     self.qr = self.generate_qr_code()
 
             # Remove update_fields for new instances
             kwargs.pop('update_fields', None)
