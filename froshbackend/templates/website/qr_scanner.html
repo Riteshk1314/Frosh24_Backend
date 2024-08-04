@@ -5,82 +5,199 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>QR Code Scanner</title>
     <script src="https://rawgit.com/schmich/instascan-builds/master/instascan.min.js"></script>
+    <style>
+        .user-info {
+            display: flex;
+            box-sizing: border-box;
+            height: 70%;
+            width: 50%;
+            gap: 25px;
+            border-radius: 15px;
+            justify-content: flex-start;
+            align-items: center;
+            background: white;
+            border: 3px solid #000000;
+            box-shadow: -12px 26px 64.6px 22px rgba(0, 0, 0, 0.25);
+            padding: 15px;
+            margin-top: 20px;
+        }
+        #preview {
+            width: 100%;
+            max-width: 500px;
+            height: auto;
+        }
+        #cameraSelect {
+            margin-bottom: 10px;
+        }
+    </style>
 </head>
-<style>
-    .user-info{
-    display: flex;
-    box-sizing: border-box;
-    height: 70%;
-    width: 50%;
-    gap: 25px;
-    border: solid black;
-    border-radius: 15px;
-    justify-content : flex-start;
-    align-items: center;
-    background: white;
-    border: 3px solid #000000;
-    box-shadow: -12px 26px 64.6px 22px rgba(0, 0, 0, 0.25);}
-</style>
 <body>
     <h1>QR Code Scanner</h1>
+    <select id="cameraSelect"></select>
     <video id="preview"></video>
     <div class="user-info" id="result"></div>
+    <div id="actionButtons" style="display: none;">
+        <button id="acceptButton">Accept</button>
+        <button id="rejectButton">Reject</button>
+    </div>
     <div id="debug"></div>
 
     <script>
-        let scanner = new Instascan.Scanner({ video: document.getElementById('preview') });
+        let scanner;
+        let currentCamera;
+        let lastScannedContent 
         
-        scanner.addListener('scan', function (content) {
-            document.getElementById('debug').textContent = `Scanned QR content: ${content}`;
+        function initScanner() {
+            scanner = new Instascan.Scanner({ video: document.getElementById('preview') });
             
+            scanner.addListener('scan', function (content) {
+                lastScannedContent = content;  
+                document.getElementById('debug').textContent = `Scanned QR content: ${content}`;
+                
+                fetch('/event/scan/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({qr_data: content })
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.success) {
+                        document.getElementById('result').innerHTML = `
+                            <p>User ID: ${data.registration_id}</p>
+                            <p>Is Scanned: ${data.is_scanned}</p>
+                            <p>Is Booked: ${data.is_booked}</p>
+                            <p>Image: ${data.image}</p>
+                            <p>Slot: ${data.slot}</p>
+                            <p>Last Scanned: ${new Date(data.last_scanned).toLocaleString()}</p>
+                        `;
+                        document.getElementById('actionButtons').style.display = 'block';
+                    } else {
+                        document.getElementById('result').innerHTML = `
+                            <p>Error: ${data.error}</p>
+                            <p>Message: ${data.message || ''}</p>
+                            <p>Details: ${data.details || ''}</p>
+                        `;
+                        document.getElementById('actionButtons').style.display = 'none';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    document.getElementById('result').textContent = `An error occurred: ${error.message}`;
+                });
+            });
+        }
+
+        function populateCameraSelect(cameras) {
+            const select = document.getElementById('cameraSelect');
+            select.innerHTML = '';
+            cameras.forEach((camera, index) => {
+                const option = document.createElement('option');
+                option.value = index;
+                option.text = camera.name || `Camera ${index + 1}`;
+                select.appendChild(option);
+            });
+        }
+
+        function startScanner(camera) {
+            if (scanner) {
+                scanner.stop().then(() => {
+                    scanner.start(camera).catch(function (e) {
+                        console.error('Error starting camera:', e);
+                        document.getElementById('debug').textContent = `Camera start error: ${e.message}`;
+                    });
+                }).catch(function (e) {
+                    console.error('Error stopping previous camera:', e);
+                    scanner.start(camera).catch(function (e) {
+                        console.error('Error starting camera:', e);
+                        document.getElementById('debug').textContent = `Camera start error: ${e.message}`;
+                    });
+                });
+            } else {
+                initScanner();
+                scanner.start(camera).catch(function (e) {
+                    console.error('Error starting camera:', e);
+                    document.getElementById('debug').textContent = `Camera start error: ${e.message}`;
+                });
+            }
+            currentCamera = camera;
+        }
+
+        Instascan.Camera.getCameras().then(function (cameras) {
+            console.log('Cameras found:', cameras.length);
+            if (cameras.length > 0) {
+                populateCameraSelect(cameras);
+                startScanner(cameras[0]);
+
+                document.getElementById('cameraSelect').addEventListener('change', function(event) {
+                    console.log('Switching to camera:', event.target.value);
+                    startScanner(cameras[event.target.value]);
+                });
+            } else {
+                console.error('No cameras found.');
+                document.getElementById('debug').textContent = 'No cameras found.';
+            }
+        }).catch(function (e) {
+            console.error('Error getting cameras:', e);
+            document.getElementById('debug').textContent = `Camera error: ${e.message}`;
+        });
+
+        document.getElementById('acceptButton').addEventListener('click', function() {
+            handleAction('accept');
+        });
+
+        document.getElementById('rejectButton').addEventListener('click', function() {
+            handleAction('reject');
+        });
+
+        function handleAction(action) {
+            if (!lastScannedContent) {
+                alert('No QR code has been scanned yet.');
+                return;
+            }
+        
             fetch('/event/scan/', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({qr_data: content })
+                body: JSON.stringify({
+                    qr_data: lastScannedContent,
+                    action: action
+                })
             })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                return response.json();
-            })
+            .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    document.getElementById('result').innerHTML = `
-                        <p>User ID: ${data.registration_id}</p>
-                        <p>Is Scanned: ${data.is_scanned}</p>
-                        <p>Is Booked: ${data.is_booked}</p>
-                        <p>image: ${data.image}</p>
-                        <p>Last Scanned: ${new Date(data.last_scanned).toLocaleString()}</p>
-                    `;
+                    alert(`Scan ${action}ed successfully`);
+                    updateUIAfterAction(data, action);
                 } else {
-                    document.getElementById('result').innerHTML = `
-                        <p>Error: ${data.error}</p>
-                        <p>Message: ${data.message || ''}</p>
-                        <p>Details: ${data.details || ''}</p>
-                    `;
+                    alert(`Error: ${data.error}`);
                 }
+                document.getElementById('result').innerHTML = '';
+                document.getElementById('actionButtons').style.display = 'none';
+                lastScannedContent = null;  // Reset the stored content
             })
             .catch(error => {
                 console.error('Error:', error);
-                document.getElementById('result').textContent = `An error occurred: ${error.message}`;
+                alert(`An error occurred: ${error.message}`);
             });
-        });
-
-        Instascan.Camera.getCameras().then(function (cameras) {
-            if (cameras.length > 0) {
-                scanner.start(cameras[0]);
-            } else {
-                console.error('No cameras found.');
-                document.getElementById('debug').textContent = 'No cameras found.';
+        }
+        function updateUIAfterAction(data, action) {
+            const resultDiv = document.getElementById('result');
+            const isScannedElement = resultDiv.querySelector('p:nth-child(2)');
+            if (isScannedElement) {
+                isScannedElement.textContent = `Is Scanned: ${action === 'accept'}`;
             }
-
-        }).catch(function (e) {
-            console.error(e);
-            document.getElementById('debug').textContent = `Camera error: ${e.message}`;
-        });
+            // You may want to update other UI elements here as well
+            document.getElementById('actionButtons').style.display = 'none';
+        }
     </script>
 </body>
 </html>

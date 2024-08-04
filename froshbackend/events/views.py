@@ -84,10 +84,58 @@ from django.db import transaction
 class EventList(generics.ListCreateAPIView):
     queryset = Events.objects.all()
     serializer_class = eventSerializer
-
+    
+    selected_fields = ['event_id', 'name', 'date', 'venue','is_booking','slot_id','is_live','image','is_display','time','description']  #
+    
     def list(self, request, *args, **kwargs):
-        return super().list(request, *args, **kwargs)
-
+        queryset = self.filter_queryset(self.get_queryset())
+        serializer = self.get_serializer(queryset, many=True)
+    
+        # selected_data = []
+        # print(serializer.data)
+        # for item in serializer.data:
+        #     if item['event_id'] in selected_data:
+        #         selected_data[item['event_id']]['slots'].append({'date':item['date'], 'venue':item['venue'],'slot_id':item['slot_id'],'time':item['time']})
+        #     else:
+        #         selected_data[item['event_id']] = {
+        #             'name':item['name'],
+        #             'is_booking':item['is_booking'],
+        #             'is_display':item['is_display'],
+        #             'image': item['image'],
+        #             'is_live': item['is_live'],
+        #             'slots':[{'date':item['date'], 'venue':item['venue'],'slot_id':item['slot_id'],'time':item['time']}]
+        #         }
+        
+        events_dict = {}
+    
+    # Process each serialized item
+        for item in serializer.data:
+            event_id = item['event_id']
+            if event_id not in events_dict:
+                # Initialize a new event entry
+                events_dict[event_id] = {
+                    'event_id': event_id,
+                    'name': item['name'],
+                    'is_booking': item['is_booking'],
+                    'is_display': item['is_display'],
+                    'image': item['image'],
+                    'is_live': item['is_live'],
+                    'slots': []
+                }
+            
+            # Add slot information to the corresponding event
+            events_dict[event_id]['slots'].append({
+                'date': item['date'],
+                'venue': item['venue'],
+                'slot_id': item['slot_id'],
+                'time': item['time']
+            })
+        
+        # Convert the dictionary values to a list
+        selected_data = list(events_dict.values())
+        return Response(selected_data)
+    
+    
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         if serializer.is_valid():
@@ -129,33 +177,44 @@ from django.utils import timezone
 
 
 
-
+from django.db import transaction
+from django.db.models import F
+from django.shortcuts import get_object_or_404
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from rest_framework import status
 
 @api_view(['POST'])
-@transaction.atomic
 @permission_classes([IsAuthenticated])
 def book_ticket(request):
     user = request.user
     name = request.data.get('name')
+    slot_id=request.data.get('slot_id')
     
     if not name:
         return Response({"error": "Event name is required"}, status=status.HTTP_400_BAD_REQUEST)
     
-    event = get_object_or_404(Events, name=name, is_live=True)
+    try:
+        with transaction.atomic():
+            event = Events.objects.select_for_update().get(name=name, is_live=True,slot_id=slot_id)
+            
+            if passes.objects.filter(registration_id=user, event_id__event_id=event.event_id).exists():
+                return Response({"error": "User already has a booked ticket"}, status=status.HTTP_400_BAD_REQUEST)
+            
+            if event.available_tickets <= 0 or not event.is_booking:
+                return Response({"error": "No tickets available for this event"}, status=status.HTTP_400_BAD_REQUEST)
+            
+            new_pass = passes.objects.create(event_id=event, registration_id=user, is_booked=True)
+     
+            Events.objects.filter(id=event.id).update(available_tickets=F('available_tickets') - 1)
+            
+            event.refresh_from_db()
     
-    if passes.objects.filter(registration_id=user, event_id=event).exists():
-        return Response({"error": "User already has a booked ticket"}, status=status.HTTP_400_BAD_REQUEST)
-    
-    if event.available_tickets <= 0:
-        return Response({"error": "No tickets available for this event"}, status=status.HTTP_400_BAD_REQUEST)
-    
-    with transaction.atomic():
-        new_pass = passes.objects.create(event_id=event, registration_id=user, is_booked=True)
-        event.available_tickets -= 1
-        event.save()
+    except Events.DoesNotExist:
+        return Response({"error": "Event not found"}, status=status.HTTP_404_NOT_FOUND)
     
     serializer = UserSerializer(user)
-    print("ticket booked successfully")
     return Response({
         "message": "Ticket booked successfully",
         "user": serializer.data,
@@ -164,7 +223,6 @@ def book_ticket(request):
             "available_tickets": event.available_tickets
         }
     }, status=status.HTTP_200_OK)
-    
     # user = request.user
     # name = request.data.get('name')
     
@@ -252,59 +310,30 @@ def book_ticket(request):
 import traceback
 
 @csrf_exempt
+@csrf_exempt
 def qr_scanner_view(request):
     if request.method == 'GET':
         return render(request, 'website/qr_scanner.html')
     elif request.method == 'POST':
         try:
             data = json.loads(request.body)
-            qr_data = data.get('qr_data')
             
-            print(f"Received QR data: {qr_data}")
-            try:
-                print("this try")
-                secure_id = qr_data
-                print(secure_id)
-                user = User.objects.get(secure_id=secure_id)
-                print(user)
-                event = Events.objects.filter(is_live=True).first()
-                print(event)
-                
-                event_pass = passes.objects.filter(
-                event_id=event,registration_id=user).first()
-                print(event_pass)
-                if(event_pass.is_scanned==False):
-                    event_pass.last_scanned = timezone.now()
-                    event_pass.save()
-                    event_pass.is_scanned=True
-                    event_pass.save()
-                    # print(f"scan success of {user.registration_id}")
-                    return JsonResponse({
-                        'success': True,
-                        # 'registration_id': event_pass.registration_id,
-                        'image':user.image,
-                        'is_scanned': event_pass.is_scanned,
-                        'is_booked': event_pass.is_booked,
-                        'last_scanned': event_pass.last_scanned.isoformat(),
-                        'message': 'User information retrieved successfully'
-                    })
-            except User.DoesNotExist:
+            if 'qr_data' in data:
+                # Initial scan
+                return handle_initial_scan(data)
+            elif 'qr_data' in data and 'action' in data:
+                # Accept/Reject action
+                return handle_action(data)
+            else:
                 return JsonResponse({
                     'success': False,
-                    'error': f'No user found with ID {qr_data}',
-                    'message': 'Please check if the QR code contains a valid user ID'
-                }, status=404)
-            except ValueError:
-                return JsonResponse({
-                    'success': False,
-                    'error': f'Invalid user ID format: {qr_data}',
-                    'message': 'The QR code should contain a  secure ID'
+                    'error': 'Invalid request data',
+                    'message': 'Request must contain either qr_data or registration_id and action'
                 }, status=400)
             
         except json.JSONDecodeError:
             return JsonResponse({'success': False, 'error': 'Invalid JSON'}, status=400)
         except Exception as e:
-            # Log the full exception for debugging
             print(f"An unexpected error occurred: {str(e)}")
             print(traceback.format_exc())
             return JsonResponse({
@@ -314,3 +343,132 @@ def qr_scanner_view(request):
             }, status=500)
     else:
         return JsonResponse({'success': False, 'error': 'Invalid request method'}, status=405)
+
+def handle_initial_scan(data):
+    qr_data = data.get('qr_data')
+    print(f"Received QR data: {qr_data}")
+    try:
+        secure_id = qr_data
+        user = User.objects.get(secure_id=secure_id)
+        print(f"User: {user.registration_id} (secure_id: {user.secure_id})")
+
+        live_events = Events.objects.filter(is_live=True)
+        if not live_events.exists():
+            return JsonResponse({
+                'success': False,
+                'error': 'No live event found',
+                'message': 'There is no active event at the moment'
+            }, status=404)
+
+        event = live_events.first()
+        print(f"Selected event: {event.id} - {event.name}")
+
+        print("Querying passes...")
+        event_pass = passes.objects.get(registration_id=user, event_id__event_id=event.event_id)
+        print(f"Event pass query result: {event_pass}")
+
+        if event_pass is None:
+            return JsonResponse({
+                'success': False,
+                'error': 'No pass found for this user and event',
+                'message': 'User does not have a pass for the current event'
+            }, status=404)
+
+        if not event_pass.is_scanned:
+            event_pass.last_scanned = timezone.now()
+            event_pass.save()
+
+        return JsonResponse({
+            'success': True,
+            'registration_id': user.registration_id,
+            'image': user.image if hasattr(user, 'image') else None,
+            'is_scanned': event_pass.is_scanned,
+            'is_booked': event_pass.is_booked,
+            'last_scanned': event_pass.last_scanned.isoformat(),
+            'message': 'User information retrieved successfully'
+        })
+
+    except User.DoesNotExist:
+        return JsonResponse({
+            'success': False,
+            'error': f'No user found with secure ID {qr_data}',
+            'message': 'Please check if the QR code contains a valid secure ID'
+        }, status=404)
+    except ValueError:
+        return JsonResponse({
+            'success': False,
+            'error': f'Invalid secure ID format: {qr_data}',
+            'message': 'The QR code should contain a valid secure ID'
+        }, status=400)
+    except Exception as e:
+        print(f"Unexpected error: {str(e)}")
+        return JsonResponse({
+            'success': False,
+            'error': 'An unexpected error occurred',
+            'message': str(e)
+        }, status=500)
+        
+
+def handle_action(data):
+    qr_data= data.get('secude_id')
+    action = data.get('action')
+    
+    try:
+        user = User.objects.get(secure_id=qr_data)
+        event = Events.objects.filter(is_live=True).first()
+        
+        
+        if not event:
+            return JsonResponse({
+                'success': False,
+                'error': 'No live event found',
+                'message': 'There is no active event at the moment'
+            }, status=404)
+        
+        try:
+            event_pass = passes.objects.get(registration_id=user, event_id__event_id=event.event_id)
+        except passes.DoesNotExist:
+            return JsonResponse({
+                'success': False,
+                'error': 'No pass found',
+                'message': 'No pass found for this user and event'
+            }, status=404)
+        
+        if event_pass and action == 'accept':
+            event_pass.is_scanned = True
+          
+            event_pass.last_scanned = timezone.now()
+            event_pass.save()
+            message = 'Scan accepted successfully'
+        elif action == 'reject':
+            event_pass.is_scanned = False
+            event_pass.save()
+            message = 'Scan rejected successfully'
+        else:
+            return JsonResponse({
+                'success': False,
+                'error': 'Invalid action',
+                'message': 'Action must be either "accept" or "reject"'
+            }, status=400)
+        
+        return JsonResponse({
+            'success': True,
+            'message': message,
+            'is_scanned': event_pass.is_scanned,
+            'last_scanned': event_pass.last_scanned.isoformat() if event_pass.last_scanned else None
+        })
+    except User.DoesNotExist:
+        return JsonResponse({
+            'success': False,
+            'error': f'No user found with ID {registration_id}',
+            'message': 'User not found'
+        }, status=404)
+    except Exception as e:
+        print(f"Unexpected error in handle_action: {str(e)}")
+        print(traceback.format_exc())
+        return JsonResponse({
+            'success': False,
+            'error': 'An error occurred while processing the action',
+            'details': str(e)
+        }, status=500)
+ 

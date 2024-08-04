@@ -103,11 +103,12 @@ WSGI_APPLICATION = 'froshbackend.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'your_database_name',
-        'USER': 'your_username',
-        'PASSWORD': 'your_password',
-        'HOST': '34.132.7.75',
-        'PORT': '5432',
+        'NAME': 'frosh1',
+        'USER': 'myuser1',
+        'PASSWORD': 'passwd',
+        'HOST': '127.0.0.1',
+        'PORT': '5432',   
+        
     }
 }
 AUTH_USER_MODEL = 'users.User' 
