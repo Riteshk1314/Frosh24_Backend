@@ -32,7 +32,7 @@ logger = logging.getLogger(__name__)
 def send_credentials_email(email, registration_id, password):
     subject = 'Your Account Credentials'
     message = f"""
-    Hello Navansh sir,
+    Hello sir,
 
     Here are your credentials for booking tickets of frosh events:
 
@@ -44,8 +44,6 @@ def send_credentials_email(email, registration_id, password):
     Best regards,
     Frosh 2024
     
-    
-    Dill jeet liya ??
     """
     
     msg = MIMEMultipart()

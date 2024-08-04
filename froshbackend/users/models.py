@@ -31,12 +31,11 @@ def generate_random_password():
 logger = logging.getLogger(__name__)
 
 class User(AbstractUser):
-    
     username = None
     password = models.CharField(blank=True, max_length=128)
     image = models.URLField(blank=True)
     registration_id = models.CharField(unique=True, max_length=20)
-    secure_id = models.AutoField( primary_key=True, blank=False)
+    secure_id = models.CharField( primary_key=True, blank=True)
     events = ArrayField(base_field=models.CharField(max_length=60), max_length=50, blank=True, default=list)
     email=models.EmailField()
     # qr = models.URLField(blank=True)
@@ -81,8 +80,8 @@ class User(AbstractUser):
         update_fields = kwargs.get('update_fields', None)
 
         if is_new:
-            # if not self.secure_id:
-            #     self.secure_id = generate_user_secure_id()
+            if not self.secure_id:
+                self.secure_id = generate_user_secure_id()
             
             raw_password = None
             if not self.password:

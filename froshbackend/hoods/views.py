@@ -57,6 +57,7 @@ from hoods.serializers import HoodSerializer, UserSerializer
 #         many=True
 #     )
 #     return Response(serializer.data)
+from django.http import JsonResponse
 
 @api_view(['POST'])
 def hood_leaderboard(request):
@@ -69,24 +70,37 @@ def hood_leaderboard(request):
 
     try:
         user = User.objects.get(registration_id=registration_id)
+        user_hood = user.hood_name
     except User.DoesNotExist:
         return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
 
-    user_hood = user.hood 
     if not user_hood:
         return Response({"error": "User is not assigned to any hood"}, status=status.HTTP_404_NOT_FOUND)
 
     all_hoods = Hoods.objects.all().order_by('-points')
     serializer = HoodSerializer(all_hoods, many=True)
-
+    
+    try:
+        user_hood_obj = Hoods.objects.get(hood_name=user_hood)
+        user_hood_serializer = HoodSerializer(user_hood_obj)
+    except Hoods.DoesNotExist:
+        return Response({"error": "User's hood not found"}, status=status.HTTP_404_NOT_FOUND)
+    Hood=Hoods.objects.get(hood_name=user_hood)
     response_data = {
         "user_hood": {
-            "id": user_hood.id,
-            "name": user_hood.name,
+            "id": Hood.hood_id,
+            "name": Hood.hood_name,
         },
-        "profile_photo": user.image,
-        "secure_id":user.secure_id,
-        # "qr": user.qr,
-        "all_hoodss": serializer.data
+        "profile_photo": str(user.image),
+        "secure_id": str(user.secure_id),
+        "all_hoods": serializer.data,
     }
     return Response(response_data)
+
+# "user_hood": {
+#             "id": user_hood_id,
+#             "name": user_hood,
+#         },
+#         "profile_photo": str(user.image),
+#         "secure_id": str(user.secure_id),  # Convert to string in case it's not
+#         "all_hoods": serializer.data,

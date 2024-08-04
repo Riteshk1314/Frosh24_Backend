@@ -8,7 +8,7 @@ class Hoods(models.Model):
     image = models.URLField(blank=True)
     member_count = models.IntegerField(default=0)
     points = models.IntegerField(default=0)
-    is_booking = models.BooleanField(default=True)
+    # is_booking = models.BooleanField(default=True)
 
     def __str__(self):
         return self.hood_name

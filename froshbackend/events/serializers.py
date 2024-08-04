@@ -10,7 +10,7 @@ class eventSerializer(serializers.ModelSerializer):
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['registration_id', 'username', 'events']  
+        fields = "__all__" 
         
 class PassesSerializer(serializers.ModelSerializer):
     class Meta:
