@@ -307,34 +307,39 @@ def book_ticket(request):
     
 # >>>>>>> branch1
 #         return render(request, 'website/scanner.html')
-import traceback
 
 @csrf_exempt
 @csrf_exempt
 def qr_scanner_view(request):
+    print("qr_scanner_view called")
+    print(f"Request method: {request.method}")
+    
     if request.method == 'GET':
         return render(request, 'website/qr_scanner.html')
     elif request.method == 'POST':
         try:
             data = json.loads(request.body)
+            print("Received POST data:", data)
             
-            if 'qr_data' in data:
-                # Initial scan
-                return handle_initial_scan(data)
-            elif 'qr_data' in data and 'action' in data:
-                # Accept/Reject action
+            if 'qr_data' in data and 'action' in data:
+                print("Calling handle_action")
                 return handle_action(data)
+            elif 'qr_data' in data:
+                print("Calling handle_initial_scan")
+                return handle_initial_scan(data)
             else:
+                print("Invalid request data")
                 return JsonResponse({
                     'success': False,
                     'error': 'Invalid request data',
-                    'message': 'Request must contain either qr_data or registration_id and action'
+                    'message': 'Request must contain qr_data and action for handle_action'
                 }, status=400)
-            
+        
         except json.JSONDecodeError:
+            print("JSONDecodeError")
             return JsonResponse({'success': False, 'error': 'Invalid JSON'}, status=400)
         except Exception as e:
-            print(f"An unexpected error occurred: {str(e)}")
+            print(f"Unexpected error: {str(e)}")
             print(traceback.format_exc())
             return JsonResponse({
                 'success': False, 
@@ -342,8 +347,8 @@ def qr_scanner_view(request):
                 'details': str(e)
             }, status=500)
     else:
+        print("Invalid request method")
         return JsonResponse({'success': False, 'error': 'Invalid request method'}, status=405)
-
 def handle_initial_scan(data):
     qr_data = data.get('qr_data')
     print(f"Received QR data: {qr_data}")
@@ -366,7 +371,9 @@ def handle_initial_scan(data):
         print("Querying passes...")
         event_pass = passes.objects.get(registration_id=user, event_id__event_id=event.event_id)
         print(f"Event pass query result: {event_pass}")
+        print(event_pass.event_id)
 
+        print(event_pass.registration_id)
         if event_pass is None:
             return JsonResponse({
                 'success': False,
@@ -380,6 +387,7 @@ def handle_initial_scan(data):
 
         return JsonResponse({
             'success': True,
+            'event':event.name,
             'registration_id': user.registration_id,
             'image': user.image if hasattr(user, 'image') else None,
             'is_scanned': event_pass.is_scanned,
@@ -410,13 +418,12 @@ def handle_initial_scan(data):
         
 
 def handle_action(data):
-    qr_data= data.get('secude_id')
+    qr_data = data.get('qr_data') 
     action = data.get('action')
     
     try:
         user = User.objects.get(secure_id=qr_data)
         event = Events.objects.filter(is_live=True).first()
-        
         
         if not event:
             return JsonResponse({
@@ -434,15 +441,16 @@ def handle_action(data):
                 'message': 'No pass found for this user and event'
             }, status=404)
         
-        if event_pass and action == 'accept':
+        if action == 'accept':
+            print("accept action tried")
             event_pass.is_scanned = True
-          
             event_pass.last_scanned = timezone.now()
-            event_pass.save()
+            print(event_pass.is_scanned)
+            event_pass.save(update_fields=['is_scanned', 'last_scanned'])
             message = 'Scan accepted successfully'
         elif action == 'reject':
             event_pass.is_scanned = False
-            event_pass.save()
+            event_pass.save(update_fields=['is_scanned'])
             message = 'Scan rejected successfully'
         else:
             return JsonResponse({
@@ -450,6 +458,8 @@ def handle_action(data):
                 'error': 'Invalid action',
                 'message': 'Action must be either "accept" or "reject"'
             }, status=400)
+        
+        print(f"After save: is_scanned = {event_pass.is_scanned}")
         
         return JsonResponse({
             'success': True,
@@ -460,7 +470,7 @@ def handle_action(data):
     except User.DoesNotExist:
         return JsonResponse({
             'success': False,
-            'error': f'No user found with ID {registration_id}',
+            'error': f'No user found with secure ID {qr_data}',
             'message': 'User not found'
         }, status=404)
     except Exception as e:
@@ -471,4 +481,3 @@ def handle_action(data):
             'error': 'An error occurred while processing the action',
             'details': str(e)
         }, status=500)
- 
