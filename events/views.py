@@ -33,7 +33,7 @@ import random, string
 import json
 import sys
 import os
-import pyzbar.pyzbar as pyzbar
+# import pyzbar.pyzbar as pyzbar
 import cv2 
 import numpy
 from users.test import qr_maker, generate_user_secure_id
