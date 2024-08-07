@@ -34,8 +34,8 @@ import json
 import sys
 import os
 # import pyzbar.pyzbar as pyzbar
-import cv2 
-import numpy
+# import cv2 
+# import numpy
 from users.test import qr_maker, generate_user_secure_id
 from users.views import *
 from users.models import User
@@ -47,18 +47,18 @@ import threading
 from django.http import StreamingHttpResponse
 from django.views.decorators.gzip import gzip_page
 from django.shortcuts import render
-from pyzbar import pyzbar
-import cv2
-import base64
+# from pyzbar import pyzbar
+# import cv2
+# import base64
 from django.shortcuts import get_object_or_404
 from django.http import JsonResponse
 from django.shortcuts import render
-from pyzbar import pyzbar
+# from pyzbar import pyzbar
 from django.shortcuts import render
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 import json
-import threading
+# import threading
 from django.views.decorators import gzip
 from django.http import StreamingHttpResponse
 from django.db import transaction
