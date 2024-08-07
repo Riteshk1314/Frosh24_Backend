@@ -11,3 +11,6 @@ pillow==10.0.0
 requests==2.31.0
 httplib2==0.22.0
 httptools==0.6.1
+pyzbar
+qrcode
+python-dotenv
