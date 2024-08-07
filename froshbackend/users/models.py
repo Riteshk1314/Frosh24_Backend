@@ -32,6 +32,9 @@ logger = logging.getLogger(__name__)
 
 class User(AbstractUser):
     username = None
+    # In the provided code snippet, `name=models` seems to be a mistake or an incomplete definition.
+    # It should be corrected to define the `name` field properly in the `User` model.
+    name=models.CharField(blank=True, max_length=128)
     password = models.CharField(blank=True, max_length=128)
     image = models.URLField(blank=True)
     registration_id = models.CharField(unique=True, max_length=20)
@@ -86,21 +89,21 @@ class User(AbstractUser):
             raw_password = None
             if not self.password:
                 raw_password = generate_random_password()
+                print(raw_password)
                 self.set_password(raw_password)
 
             # if not self.qr:
             #     self.qr = self.generate_qr_code()
-
-            # Remove update_fields for new instances
             kwargs.pop('update_fields', None)
         elif update_fields is not None:
-            # For existing instances, only update specified fields
+  
             kwargs['update_fields'] = update_fields
 
         super().save(*args, **kwargs)
 
-        if is_new and raw_password:
-            send_credentials_email(self.email, self.registration_id, raw_password)
+#mailing is commented for the purpose of setting up db 
+        # if is_new and raw_password:
+        #     send_credentials_email(self.email, self.registration_id, raw_password)
             
             
             

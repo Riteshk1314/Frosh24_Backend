@@ -205,7 +205,7 @@ def book_ticket(request):
             if event.available_tickets <= 0 or not event.is_booking:
                 return Response({"error": "No tickets available for this event"}, status=status.HTTP_400_BAD_REQUEST)
             
-            new_pass = passes.objects.create(event_id=event, registration_id=user, is_booked=True)
+            new_pass = passes.objects.create(event_id=event, registration_id=user, is_booked=True,)
      
             Events.objects.filter(id=event.id).update(available_tickets=F('available_tickets') - 1)
             

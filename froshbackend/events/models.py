@@ -18,13 +18,14 @@ class Events(models.Model):
     is_display = models.BooleanField(default=False)
     slots_required = models.BooleanField(default=False)
     booking_complete = models.BooleanField(default=False)
-    slot_id = models.CharField(max_length=16, default='lmao')
+    slot_id = models.CharField(max_length=16, unique=True)
     
     def __str__(self):
         return self.name
 
 class passes(models.Model):
     event_id= models.ForeignKey(Events, on_delete=models.CASCADE, related_name='passes')
+    # slot = models.ForeignKey(Events, on_delete=models.SET_NULL, null=True,  unique=True, blank=True, related_name='slot_passes', to_field='slot_id')
     # registration_id = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='registered_passes')
     registration_id = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='secured_passes',)
     is_booked = models.BooleanField("is_booked", default=False)
