@@ -49,10 +49,10 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'corsheaders',
     'events',
-    
     "hoods",
     
-    
+    'hijack',
+    'hijack.contrib.admin',
     'rest_framework.authtoken',
     "rest_framework",
 ]    
@@ -73,6 +73,7 @@ MIDDLEWARE = [
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
+    'hijack.middleware.HijackUserMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     
 ]
