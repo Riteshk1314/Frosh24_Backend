@@ -6,3 +6,4 @@ froshbackend/users/__pycache__
 froshbackend/__pycache__
 .env
 frosh/node_modules
+staticfiles
