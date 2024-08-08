@@ -15,7 +15,11 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path, include
+from django.urls import path
+from django.contrib.staticfiles.urls import staticfiles_urlpatterns
+from django.conf.urls import patterns, include, url
+from django.conf.urls.static import static
+from froshbackend import settings
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -24,3 +28,6 @@ urlpatterns = [
     path('', include('hoods.urls')),
     
 ]
+# + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+urlpatterns += staticfiles_urlpatterns()
