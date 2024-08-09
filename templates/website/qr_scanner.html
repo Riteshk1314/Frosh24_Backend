@@ -165,7 +165,7 @@
                                 <p>Last Scanned: ${new Date(data.last_scanned).toLocaleString()}</p>
                             `;
                             document.getElementById('actionButtons').style.display = 'block';
-                            renderImage(data.image);
+                            
                         } else {
                             document.getElementById('result').innerHTML = `
                                 <p>Error: ${data.error}</p>
