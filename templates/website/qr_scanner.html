@@ -23,7 +23,13 @@
             font-size: 2.5em;
             text-align: center;
         }
-
+        #renderedImage {
+            max-width: 100%;
+            height: auto;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            display: none;
+        }
         #cameraSelect {
             margin: 20px 0;
             padding: 10px;
@@ -119,55 +125,67 @@
         function initScanner() {
             scanner = new Instascan.Scanner({ 
                 video: document.getElementById('preview'),
-                scanPeriod: 2, // Scan every 2 ms for faster detection
-                mirror: false  // Prevent mirroring
+                scanPeriod: 2,
+                mirror: false
             });
             
             scanner.addListener('scan', function (content) {
                 lastScannedContent = content;  
                 document.getElementById('debug').textContent = `Scanned QR content: ${content}`;
                 
-                fetch('/event/scan/', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({qr_data: content })
-                })
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error(`HTTP error! status: ${response.status}`);
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    if (data.success) {
-                        document.getElementById('result').innerHTML = `
-                            <p>User ID: ${data.registration_id}</p>
-                            <p>Event: ${data.event}</p>
-                            <p>Is Scanned: ${data.is_scanned}</p>
-                            <p>Is Booked: ${data.is_booked}</p>
-                            <p>Image: ${data.image}</p>
-                            <p>Slot: ${data.slot}</p>
-                            <p>Last Scanned: ${new Date(data.last_scanned).toLocaleString()}</p>
-                        `;
-                        document.getElementById('actionButtons').style.display = 'block';
-                    } else {
-                        document.getElementById('result').innerHTML = `
-                            <p>Error: ${data.error}</p>
-                            <p>Message: ${data.message || ''}</p>
-                            <p>Details: ${data.details || ''}</p>
-                        `;
-                        document.getElementById('actionButtons').style.display = 'none';
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    document.getElementById('result').textContent = `An error occurred: ${error.message}`;
-                });
+                if (content.match(/\.(jpeg|jpg|gif|png)$/) != null) {
+                    renderImage(content);
+                } else {
+                    fetch('/event/scan/', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({qr_data: content })
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error(`HTTP error! status: ${response.status}`);
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        if (data.success) {
+                            document.getElementById('result').innerHTML = `
+                                <p>User ID: ${data.registration_id}</p>
+                                <p>Event: ${data.event}</p>
+                                <p>Is Scanned: ${data.is_scanned}</p>
+                                <p>Is Booked: ${data.is_booked}</p>
+                                <p>Image: ${data.image}</p>
+                                <p>Slot: ${data.slot}</p>
+                                <p>Last Scanned: ${new Date(data.last_scanned).toLocaleString()}</p>
+                            `;
+                            document.getElementById('actionButtons').style.display = 'block';
+                        } else {
+                            document.getElementById('result').innerHTML = `
+                                <p>Error: ${data.error}</p>
+                                <p>Message: ${data.message || ''}</p>
+                                <p>Details: ${data.details || ''}</p>
+                            `;
+                            document.getElementById('actionButtons').style.display = 'none';
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        document.getElementById('result').textContent = `An error occurred: ${error.message}`;
+                    });
+                }
             });
         }
 
+        function renderImage(imageUrl) {
+            const imgElement = document.getElementById('renderedImage');
+            imgElement.src = imageUrl;
+            imgElement.style.display = 'block';
+            document.getElementById('preview').style.display = 'none';
+            document.getElementById('result').innerHTML = `<p>Image URL: ${imageUrl}</p>`;
+            document.getElementById('actionButtons').style.display = 'none';
+        }
         function populateCameraSelect(cameras) {
             const select = document.getElementById('cameraSelect');
             select.innerHTML = '';
