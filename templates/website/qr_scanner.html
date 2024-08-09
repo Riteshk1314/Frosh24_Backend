@@ -99,7 +99,6 @@
             font-size: 14px;
         }
     </style>
-    </style>
 </head>
 <body>
     <h1>QR Code Scanner</h1>
@@ -112,15 +111,18 @@
     </div>
     <div id="debug"></div>
 
-
     <script>
         let scanner;
         let currentCamera;
-        let lastScannedContent 
-        
+        let lastScannedContent;
+
         function initScanner() {
-            scanner = new Instascan.Scanner({ video: document.getElementById('preview') });
-            
+            scanner = new Instascan.Scanner({ 
+                video: document.getElementById('preview'),
+                continuous: true, // This keeps scanning continuously
+                mirror: false // Disable mirroring to correct camera inversion
+            });
+
             scanner.addListener('scan', function (content) {
                 lastScannedContent = content;  
                 document.getElementById('debug').textContent = `Scanned QR content: ${content}`;
@@ -142,11 +144,10 @@
                     if (data.success) {
                         document.getElementById('result').innerHTML = `
                             <p>User ID: ${data.registration_id}</p>
-                            <p>Event; ${data.event}</p>
+                            <p>Event: ${data.event}</p>
                             <p>Is Scanned: ${data.is_scanned}</p>
                             <p>Is Booked: ${data.is_booked}</p>
                             <p>Image: ${data.image}</p>
-                        
                             <p>Slot: ${data.slot}</p>
                             <p>Last Scanned: ${new Date(data.last_scanned).toLocaleString()}</p>
                         `;
@@ -228,6 +229,7 @@
         document.getElementById('rejectButton').addEventListener('click', function() {
             handleAction('reject');
         });
+
         function handleAction(action) {
             if (!lastScannedContent) {
                 alert('No QR code has been scanned yet.');
@@ -261,26 +263,4 @@
                         window.location.reload();
                     }
                 } else {
-                    alert(`Error: ${data.error}\nMessage: ${data.message}\nDetails: ${data.details || 'No details provided'}`);
-                }
-                document.getElementById('result').innerHTML = '';
-                document.getElementById('actionButtons').style.display = 'none';
-                lastScannedContent = null;  // Reset the stored content
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert(`An error occurred: ${error.message}`);
-            });
-        }
-        function updateUIAfterAction(data, action) {
-            const resultDiv = document.getElementById('result');
-            const isScannedElement = resultDiv.querySelector('p:nth-child(2)');
-            if (isScannedElement) {
-                isScannedElement.textContent = `Is Scanned: ${action === 'accept'}`;
-            }
-            // You may want to update other UI elements here as well
-            document.getElementById('actionButtons').style.display = 'none';
-        }
-    </script>
-</body>
-</html>
+                    alert(`Error: ${data.error
