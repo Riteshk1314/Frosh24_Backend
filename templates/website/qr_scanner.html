@@ -40,7 +40,7 @@
             height: auto;
             border-radius: 10px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            transform: scaleX(-1);  /* This line flips the video horizontally */
+            transform: scaleX(-1);
         }
 
         .user-info {
@@ -120,7 +120,7 @@
         function initScanner() {
             scanner = new Instascan.Scanner({ 
                 video: document.getElementById('preview'),
-                scanPeriod: 2 // Scan every 5 ms for faster detection
+                scanPeriod: 2 // Scan every 2 ms for faster detection
             });
             
             scanner.addListener('scan', function (content) {
@@ -179,9 +179,24 @@
             });
         }
 
+        function startScanner(camera) {
+            if (scanner) {
+                scanner.stop().then(() => {
+                    startCamera(camera);
+                }).catch(function (e) {
+                    console.error('Error stopping previous camera:', e);
+                    startCamera(camera);
+                });
+            } else {
+                initScanner();
+                startCamera(camera);
+            }
+            currentCamera = camera;
+        }
+
         function startCamera(camera) {
             scanner.start(camera).then(() => {
-            
+                // Ensure the video is flipped horizontally
                 document.getElementById('preview').style.transform = 'scaleX(-1)';
             }).catch(function (e) {
                 console.error('Error starting camera:', e);
@@ -189,38 +204,34 @@
             });
         }
 
-        function startCamera(camera) {
-            scanner.start(camera).catch(function (e) {
-                console.error('Error starting camera:', e);
-                document.getElementById('debug').textContent = `Camera start error: ${e.message}`;
+        // Initialize everything when the page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            Instascan.Camera.getCameras().then(function (cameras) {
+                console.log('Cameras found:', cameras.length);
+                if (cameras.length > 0) {
+                    populateCameraSelect(cameras);
+                    startScanner(cameras[0]);
+
+                    document.getElementById('cameraSelect').addEventListener('change', function(event) {
+                        console.log('Switching to camera:', event.target.value);
+                        startScanner(cameras[event.target.value]);
+                    });
+                } else {
+                    console.error('No cameras found.');
+                    document.getElementById('debug').textContent = 'No cameras found.';
+                }
+            }).catch(function (e) {
+                console.error('Error getting cameras:', e);
+                document.getElementById('debug').textContent = `Camera error: ${e.message}`;
             });
-        }
 
-        Instascan.Camera.getCameras().then(function (cameras) {
-            console.log('Cameras found:', cameras.length);
-            if (cameras.length > 0) {
-                populateCameraSelect(cameras);
-                startScanner(cameras[0]);
+            document.getElementById('acceptButton').addEventListener('click', function() {
+                handleAction('accept');
+            });
 
-                document.getElementById('cameraSelect').addEventListener('change', function(event) {
-                    console.log('Switching to camera:', event.target.value);
-                    startScanner(cameras[event.target.value]);
-                });
-            } else {
-                console.error('No cameras found.');
-                document.getElementById('debug').textContent = 'No cameras found.';
-            }
-        }).catch(function (e) {
-            console.error('Error getting cameras:', e);
-            document.getElementById('debug').textContent = `Camera error: ${e.message}`;
-        });
-
-        document.getElementById('acceptButton').addEventListener('click', function() {
-            handleAction('accept');
-        });
-
-        document.getElementById('rejectButton').addEventListener('click', function() {
-            handleAction('reject');
+            document.getElementById('rejectButton').addEventListener('click', function() {
+                handleAction('reject');
+            });
         });
 
         function handleAction(action) {
@@ -274,6 +285,3 @@
     </script>
 </body>
 </html>
-
-{% comment %} 
-i hope this works {% endcomment %}
