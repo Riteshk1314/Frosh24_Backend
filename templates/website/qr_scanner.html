@@ -138,7 +138,7 @@
                 document.getElementById('debug').textContent = `Scanned QR content: ${content}`;
                 
                 if (content.match(/\.(jpeg|jpg|gif|png)$/) != null) {
-                    renderImage(content);
+                    
                 } else {
                     fetch('/event/scan/', {
                         method: 'POST',
@@ -165,6 +165,7 @@
                                 <p>Last Scanned: ${new Date(data.last_scanned).toLocaleString()}</p>
                             `;
                             document.getElementById('actionButtons').style.display = 'block';
+                            renderImage(data.image);
                         } else {
                             document.getElementById('result').innerHTML = `
                                 <p>Error: ${data.error}</p>
