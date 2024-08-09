@@ -115,14 +115,13 @@
         let scanner;
         let currentCamera;
         let lastScannedContent;
-
+        
         function initScanner() {
             scanner = new Instascan.Scanner({ 
                 video: document.getElementById('preview'),
-                continuous: true, // This keeps scanning continuously
-                mirror: false // Disable mirroring to correct camera inversion
+                scanPeriod: 5 // Scan every 5 ms for faster detection
             });
-
+            
             scanner.addListener('scan', function (content) {
                 lastScannedContent = content;  
                 document.getElementById('debug').textContent = `Scanned QR content: ${content}`;
@@ -182,25 +181,23 @@
         function startScanner(camera) {
             if (scanner) {
                 scanner.stop().then(() => {
-                    scanner.start(camera).catch(function (e) {
-                        console.error('Error starting camera:', e);
-                        document.getElementById('debug').textContent = `Camera start error: ${e.message}`;
-                    });
+                    startCamera(camera);
                 }).catch(function (e) {
                     console.error('Error stopping previous camera:', e);
-                    scanner.start(camera).catch(function (e) {
-                        console.error('Error starting camera:', e);
-                        document.getElementById('debug').textContent = `Camera start error: ${e.message}`;
-                    });
+                    startCamera(camera);
                 });
             } else {
                 initScanner();
-                scanner.start(camera).catch(function (e) {
-                    console.error('Error starting camera:', e);
-                    document.getElementById('debug').textContent = `Camera start error: ${e.message}`;
-                });
+                startCamera(camera);
             }
             currentCamera = camera;
+        }
+
+        function startCamera(camera) {
+            scanner.start(camera).catch(function (e) {
+                console.error('Error starting camera:', e);
+                document.getElementById('debug').textContent = `Camera start error: ${e.message}`;
+            });
         }
 
         Instascan.Camera.getCameras().then(function (cameras) {
@@ -237,10 +234,6 @@
             }
         
             console.log(`Sending action request: qr_data=${lastScannedContent}, action=${action}`);
-            console.log("Sending action request:", {
-                qr_data: lastScannedContent,
-                action: action
-            });
             fetch('/event/scan/', {
                 method: 'POST',
                 headers: {
@@ -259,8 +252,29 @@
                         updateUIAfterAction(data, action);
                     } else if (action === 'reject') {
                         alert('Scan rejected successfully');
-                        // Refresh the page
                         window.location.reload();
                     }
                 } else {
-                    alert(`Error: ${data.error
+                    alert(`Error: ${data.error}\nMessage: ${data.message}\nDetails: ${data.details || 'No details provided'}`);
+                }
+                document.getElementById('result').innerHTML = '';
+                document.getElementById('actionButtons').style.display = 'none';
+                lastScannedContent = null;
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert(`An error occurred: ${error.message}`);
+            });
+        }
+
+        function updateUIAfterAction(data, action) {
+            const resultDiv = document.getElementById('result');
+            const isScannedElement = resultDiv.querySelector('p:nth-child(3)');
+            if (isScannedElement) {
+                isScannedElement.textContent = `Is Scanned: ${action === 'accept'}`;
+            }
+            document.getElementById('actionButtons').style.display = 'none';
+        }
+    </script>
+</body>
+</html>
