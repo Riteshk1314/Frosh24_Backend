@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>QR Code Scanner</title>
+    <img id="renderedImage" alt="Rendered Image" style="display: none;">
     <script src="https://rawgit.com/schmich/instascan-builds/master/instascan.min.js"></script>
     <style>
         body {
@@ -115,6 +116,9 @@
         <button id="acceptButton">Accept</button>
         <button id="rejectButton">Reject</button>
     </div>
+    <div>
+        
+    </div>
     <div id="debug"></div>
 
     <script>
@@ -180,9 +184,12 @@
 
         function renderImage(imageUrl) {
             const imgElement = document.getElementById('renderedImage');
+            const previewElement = document.getElementById('preview');
+            
             imgElement.src = imageUrl;
             imgElement.style.display = 'block';
-            document.getElementById('preview').style.display = 'none';
+            previewElement.style.display = 'none';
+            
             document.getElementById('result').innerHTML = `<p>Image URL: ${imageUrl}</p>`;
             document.getElementById('actionButtons').style.display = 'none';
         }
@@ -196,17 +203,30 @@
                 select.appendChild(option);
             });
         }
+        function resetView() {
+            const imgElement = document.getElementById('renderedImage');
+            const previewElement = document.getElementById('preview');
+            
+            imgElement.style.display = 'none';
+            previewElement.style.display = 'block';
+            
+            document.getElementById('result').innerHTML = '';
+            document.getElementById('actionButtons').style.display = 'none';
+        }
 
         function startScanner(camera) {
             if (scanner) {
                 scanner.stop().then(() => {
+                    resetView();
                     startCamera(camera);
                 }).catch(function (e) {
                     console.error('Error stopping previous camera:', e);
+                    resetView();
                     startCamera(camera);
                 });
             } else {
                 initScanner();
+                resetView();
                 startCamera(camera);
             }
             currentCamera = camera;
