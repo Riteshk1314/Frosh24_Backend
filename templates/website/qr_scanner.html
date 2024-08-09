@@ -187,7 +187,9 @@
             const previewElement = document.getElementById('preview');
             
             imgElement.src = imageUrl;
+
             imgElement.style.display = 'block';
+            console.log(imgElement.src)
             previewElement.style.display = 'none';
             
             document.getElementById('result').innerHTML = `<p>Image URL: ${imageUrl}</p>`;
