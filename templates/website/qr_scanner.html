@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>QR Code Scanner</title>
-    <img id="renderedImage" alt="Rendered Image" style="display: none;">
     <script src="https://rawgit.com/schmich/instascan-builds/master/instascan.min.js"></script>
     <style>
         body {
@@ -111,13 +110,11 @@
     <h1>QR Code Scanner</h1>
     <select id="cameraSelect"></select>
     <video id="preview"></video>
+    <img id="renderedImage" alt="Rendered Image" style="display: none;">
     <div class="user-info" id="result"></div>
     <div id="actionButtons" style="display: none;">
         <button id="acceptButton">Accept</button>
         <button id="rejectButton">Reject</button>
-    </div>
-    <div>
-        
     </div>
     <div id="debug"></div>
 
@@ -126,6 +123,16 @@
         let currentCamera;
         let lastScannedContent;
         
+        function renderImage(imageUrl) {
+            const imgElement = document.getElementById('renderedImage');
+            const previewElement = document.getElementById('preview');
+            
+            imgElement.style.display = 'block';
+            imgElement.src = imageUrl;
+            
+            previewElement.style.display = 'none';
+        }
+
         function initScanner() {
             scanner = new Instascan.Scanner({ 
                 video: document.getElementById('preview'),
@@ -137,7 +144,6 @@
                 lastScannedContent = content;  
                 document.getElementById('debug').textContent = `Scanned QR content: ${content}`;
             
-                // No need to check if it's an image URL here, just send it to the server
                 fetch('/event/scan/', {
                     method: 'POST',
                     headers: {
@@ -164,9 +170,11 @@
                         `;
                         document.getElementById('actionButtons').style.display = 'block';
                         
-                        // Pass the image URL to renderImage function
                         if (data.image) {
                             renderImage(data.image);
+                        } else {
+                            document.getElementById('preview').style.display = 'block';
+                            document.getElementById('renderedImage').style.display = 'none';
                         }
                     } else {
                         document.getElementById('result').innerHTML = `
@@ -182,18 +190,8 @@
                     document.getElementById('result').textContent = `An error occurred: ${error.message}`;
                 });
             });
-            
+        }
 
-            function renderImage(imageUrl) {
-                const imgElement = document.getElementById('renderedImage');
-                const previewElement = document.getElementById('preview');
-                
-                imgElement.style.display = 'block';
-                imgElement.src = imageUrl;
-                
-                previewElement.style.display = 'none';
-            }
-            
         function populateCameraSelect(cameras) {
             const select = document.getElementById('cameraSelect');
             select.innerHTML = '';
@@ -204,11 +202,13 @@
                 select.appendChild(option);
             });
         }
+
         function resetView() {
             const imgElement = document.getElementById('renderedImage');
             const previewElement = document.getElementById('preview');
             
             imgElement.style.display = 'none';
+            imgElement.src = '';
             previewElement.style.display = 'block';
             
             document.getElementById('result').innerHTML = '';
@@ -240,7 +240,6 @@
             });
         }
 
-        // Initialize everything when the page loads
         document.addEventListener('DOMContentLoaded', function() {
             Instascan.Camera.getCameras().then(function (cameras) {
                 console.log('Cameras found:', cameras.length);
