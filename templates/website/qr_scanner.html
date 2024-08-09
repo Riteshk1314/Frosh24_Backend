@@ -40,6 +40,7 @@
             height: auto;
             border-radius: 10px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transform: scaleX(-1);  /* This line flips the video horizontally */
         }
 
         .user-info {
@@ -119,7 +120,7 @@
         function initScanner() {
             scanner = new Instascan.Scanner({ 
                 video: document.getElementById('preview'),
-                scanPeriod: 5 // Scan every 5 ms for faster detection
+                scanPeriod: 2 // Scan every 5 ms for faster detection
             });
             
             scanner.addListener('scan', function (content) {
@@ -178,19 +179,14 @@
             });
         }
 
-        function startScanner(camera) {
-            if (scanner) {
-                scanner.stop().then(() => {
-                    startCamera(camera);
-                }).catch(function (e) {
-                    console.error('Error stopping previous camera:', e);
-                    startCamera(camera);
-                });
-            } else {
-                initScanner();
-                startCamera(camera);
-            }
-            currentCamera = camera;
+        function startCamera(camera) {
+            scanner.start(camera).then(() => {
+            
+                document.getElementById('preview').style.transform = 'scaleX(-1)';
+            }).catch(function (e) {
+                console.error('Error starting camera:', e);
+                document.getElementById('debug').textContent = `Camera start error: ${e.message}`;
+            });
         }
 
         function startCamera(camera) {
