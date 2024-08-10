@@ -15,7 +15,7 @@ from rest_framework.status import (
     HTTP_400_BAD_REQUEST,
     HTTP_401_UNAUTHORIZED,
 )
-import openpyxl
+# import openpyxl
 
 from events.serializers import UserSerializer 
 # Create your views here.
