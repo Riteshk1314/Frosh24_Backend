@@ -74,18 +74,18 @@ def hood_leaderboard(request):
     except User.DoesNotExist:
         return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
 
-    if not user_hood:
-        return Response({"error": "User is not assigned to any hood"}, status=status.HTTP_404_NOT_FOUND)
+    # if not user_hood:
+    #     return Response({"error": "User is not assigned to any hood"}, status=status.HTTP_404_NOT_FOUND)
 
-    all_hoods = Hoods.objects.all().order_by('-points')
-    serializer = HoodSerializer(all_hoods, many=True)
+    # all_hoods = Hoods.objects.all().order_by('-points')
+    # serializer = HoodSerializer(all_hoods, many=True)
     
-    try:
-        user_hood_obj = Hoods.objects.get(hood_name=user_hood)
-        user_hood_serializer = HoodSerializer(user_hood_obj)
-    except Hoods.DoesNotExist:
-        return Response({"error": "User's hood not found"}, status=status.HTTP_404_NOT_FOUND)
-    Hood=Hoods.objects.get(hood_name=user_hood)
+    # try:
+    #     user_hood_obj = Hoods.objects.get(hood_name=user_hood)
+    #     user_hood_serializer = HoodSerializer(user_hood_obj)
+    # except Hoods.DoesNotExist:
+    #     return Response({"error": "User's hood not found"}, status=status.HTTP_404_NOT_FOUND)
+    # Hood=Hoods.objects.get(hood_name=user_hood)
     response_data = {
         # "user_hood": {
         #     "id": Hood.hood_id,
