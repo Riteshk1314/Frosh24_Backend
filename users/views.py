@@ -74,113 +74,113 @@ class ForgotPassword(APIView):
         except Exception as e:
             return Response({'error': 'Failed to send email'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         return Response({'message': 'New password sent to your email'}, status=status.HTTP_200_OK)
-import string
-import random
-import csv
-import logging
-import openpyxl
+# import string
+# import random
+# import csv
+# import logging
+# import openpyxl
 from django.db import transaction
  # Make sure to import your custom User model
 
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+# logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
-def generate_random_password(length=10):
-    digits = string.digits
-    password = ''.join(random.choice(digits) for _ in range(length))
-    return password
+# def generate_random_password(length=10):
+#     digits = string.digits
+#     password = ''.join(random.choice(digits) for _ in range(length))
+#     return password
 
-def generate_random_secure_id(length=8):
-    digits = string.digits
-    secure_id = ''.join(random.choice(digits) for _ in range(length))
-    return secure_id
-def convert_binary_to_csv(binary_file_path, csv_file_path):
-    try:
-        with open(binary_file_path, 'rb') as binary_file:
-            binary_content = binary_file.read()
+# def generate_random_secure_id(length=8):
+#     digits = string.digits
+#     secure_id = ''.join(random.choice(digits) for _ in range(length))
+#     return secure_id
+# def convert_binary_to_csv(binary_file_path, csv_file_path):
+#     try:
+#         with open(binary_file_path, 'rb') as binary_file:
+#             binary_content = binary_file.read()
         
-        # Assuming the binary content is UTF-8 encoded
-        text_content = binary_content.decode('utf-8')
+#         # Assuming the binary content is UTF-8 encoded
+#         text_content = binary_content.decode('utf-8')
         
-        # Write the decoded content to a new CSV file
-        with open(csv_file_path, 'w', newline='', encoding='utf-8') as csv_file:
-            csv_file.write(text_content)
+#         # Write the decoded content to a new CSV file
+#         with open(csv_file_path, 'w', newline='', encoding='utf-8') as csv_file:
+#             csv_file.write(text_content)
         
-        logging.info(f"Successfully converted binary file to CSV: {csv_file_path}")
-    except Exception as e:
-        logging.error(f"Error converting binary to CSV: {e}")
-        raise
+#         logging.info(f"Successfully converted binary file to CSV: {csv_file_path}")
+#     except Exception as e:
+#         logging.error(f"Error converting binary to CSV: {e}")
+#         raise
 
-def csv_db():
-    input_csv_file = 'freshers.csv'
-    output_csv_file = 'user_data_with_passwords3.csv'
-    logging.info(f"Opening input CSV file: {input_csv_file}")
+# def csv_db():
+#     input_csv_file = 'freshers.csv'
+#     output_csv_file = 'user_data_with_passwords3.csv'
+#     logging.info(f"Opening input CSV file: {input_csv_file}")
     
-    row_count = 0
+#     row_count = 0
 
-    try:
-        with open(input_csv_file, 'r', newline='', encoding='utf-8') as input_csvfile, \
-             open(output_csv_file, 'w', newline='', encoding='utf-8') as output_csvfile:
+#     try:
+#         with open(input_csv_file, 'r', newline='', encoding='utf-8') as input_csvfile, \
+#              open(output_csv_file, 'w', newline='', encoding='utf-8') as output_csvfile:
             
-            csvreader = csv.reader(input_csvfile)
-            csvwriter = csv.writer(output_csvfile)
+#             csvreader = csv.reader(input_csvfile)
+#             csvwriter = csv.writer(output_csvfile)
             
-            # Write header to output CSV
-            csvwriter.writerow(['Name', 'Registration ID', 'Email', 'Image Path', 'Password', 'Secure ID'])
+#             # Write header to output CSV
+#             csvwriter.writerow(['Name', 'Registration ID', 'Email', 'Image Path', 'Password', 'Secure ID'])
             
-            start = int(input('Enter start row number: '))
-            for row_num, row in enumerate(csvreader, start=0):
-                if row_num < start:
-                    continue
+#             start = int(input('Enter start row number: '))
+#             for row_num, row in enumerate(csvreader, start=0):
+#                 if row_num < start:
+#                     continue
                 
-                if len(row) != 4:
-                    logging.warning(f"Skipping row {row_num}: Invalid number of columns")
-                    continue
+#                 if len(row) != 4:
+#                     logging.warning(f"Skipping row {row_num}: Invalid number of columns")
+#                     continue
                 
-                name, registration_id, email, image_path = row
-                password = generate_random_password()
-                secure_id = generate_random_secure_id()
+#                 name, registration_id, email, image_path = row
+#                 password = generate_random_password()
+#                 secure_id = generate_random_secure_id()
               
-                print(f"Processing: {name}, {registration_id}, {password}, {secure_id}")
-                logging.info(f"Generated values for row {row_num}: password={password}, secure_id={secure_id}")
+#                 print(f"Processing: {name}, {registration_id}, {password}, {secure_id}")
+#                 logging.info(f"Generated values for row {row_num}: password={password}, secure_id={secure_id}")
                 
-                try:
-                    with transaction.atomic():
-                        custom_user = User.objects.create(
-                                name=name,
-                                email=email,
-                                registration_id=registration_id,
-                                image=image_path,
-                                secure_id=secure_id,
-                                is_active=True,
-                                is_superuser=False,
-                                events=[]
-                                )
+#                 try:
+#                     with transaction.atomic():
+#                         custom_user = User.objects.create(
+#                                 name=name,
+#                                 email=email,
+#                                 registration_id=registration_id,
+#                                 image=image_path,
+#                                 secure_id=secure_id,
+#                                 is_active=True,
+#                                 is_superuser=False,
+#                                 events=[]
+#                                 )
                         
-                        csvwriter.writerow([name, registration_id, email, image_path, password, secure_id])
-                        custom_user.set_password(password)
-                        custom_user.save()
+#                         csvwriter.writerow([name, registration_id, email, image_path, password, secure_id])
+#                         custom_user.set_password(password)
+#                         custom_user.save()
                         
-                    # Write data to output CSV
+#                     # Write data to output CSV
                     
-                    row_count += 1
-                    logging.info(f"Successfully created user and added to CSV for row {row_num}")
-                except Exception as e:
-                    logging.error(f"Error processing row {row_num}: {e}")
+#                     row_count += 1
+#                     logging.info(f"Successfully created user and added to CSV for row {row_num}")
+#                 except Exception as e:
+#                     logging.error(f"Error processing row {row_num}: {e}")
 
-        logging.info(f"Total rows added to output CSV: {row_count}")
+#         logging.info(f"Total rows added to output CSV: {row_count}")
 
-        # Verify the output CSV file
-        with open(output_csv_file, 'r', newline='', encoding='utf-8') as verify_file:
-            verify_reader = csv.reader(verify_file)
-            verify_row_count = sum(1 for row in verify_reader) - 1  # Subtract 1 for the header
-        logging.info(f"Verification: Output CSV file has {verify_row_count} rows (excluding header)")
+#         # Verify the output CSV file
+#         with open(output_csv_file, 'r', newline='', encoding='utf-8') as verify_file:
+#             verify_reader = csv.reader(verify_file)
+#             verify_row_count = sum(1 for row in verify_reader) - 1  # Subtract 1 for the header
+#         logging.info(f"Verification: Output CSV file has {verify_row_count} rows (excluding header)")
 
-    except FileNotFoundError:
-        logging.error(f"CSV file '{input_csv_file}' not found.")
-    except Exception as e:
-        logging.error(f"An unexpected error occurred: {e}")
+#     except FileNotFoundError:
+#         logging.error(f"CSV file '{input_csv_file}' not found.")
+#     except Exception as e:
+#         logging.error(f"An unexpected error occurred: {e}")
 
-    logging.info("Data processing completed")
+#     logging.info("Data processing completed")
 
 
-# csv_db()
+# # csv_db()
