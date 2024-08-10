@@ -87,13 +87,13 @@ def hood_leaderboard(request):
         return Response({"error": "User's hood not found"}, status=status.HTTP_404_NOT_FOUND)
     Hood=Hoods.objects.get(hood_name=user_hood)
     response_data = {
-        "user_hood": {
-            "id": Hood.hood_id,
-            "name": Hood.hood_name,
-        },
+        # "user_hood": {
+        #     "id": Hood.hood_id,
+        #     "name": Hood.hood_name,
+        # },
         "profile_photo": str(user.image),
         "secure_id": str(user.secure_id),
-        "all_hoods": serializer.data,
+        # "all_hoods": serializer.data,
     }
     return Response(response_data)
 

@@ -86,11 +86,11 @@ class User(AbstractUser):
             if not self.secure_id:
                 self.secure_id = generate_user_secure_id()
             
-            raw_password = None
-            if not self.password:
-                raw_password = generate_random_password()
-                print(raw_password)
-                self.set_password(raw_password)
+            # raw_password = None
+            # if not self.password:
+            #     raw_password = generate_random_password()
+            #     print(raw_password)
+            #     self.set_password(raw_password)
 
             # if not self.qr:
             #     self.qr = self.generate_qr_code()
