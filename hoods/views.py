@@ -92,7 +92,9 @@ def hood_leaderboard(request):
         #     "name": Hood.hood_name,
         # },
         "profile_photo": str(user.image),
-        "secure_id": str(user.secure_id),
+        "secure_id": str(user.registration_id),
+        # "name":user.name,
+        
         # "all_hoods": serializer.data,
     }
     return Response(response_data)

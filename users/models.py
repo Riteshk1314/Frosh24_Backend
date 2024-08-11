@@ -102,8 +102,8 @@ class User(AbstractUser):
         super().save(*args, **kwargs)
 
 # mailing is commented for the purpose of setting up db 
-        if is_new and raw_password:
-            send_credentials_email(self.email, self.registration_id, raw_password)
+        # if is_new and raw_password:
+        #     send_credentials_email(self.email, self.registration_id, raw_password)
             
              
             
