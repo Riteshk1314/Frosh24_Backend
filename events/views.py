@@ -424,7 +424,7 @@ def handle_action(data):
     
     try:
         user = User.objects.get(secure_id=qr_data)
-        event = Events.objects.filter(is_live=True).first()
+        event = Events.objects.filter(event_id__event_id=event.event_id)
         
         if not event:
             return JsonResponse({
