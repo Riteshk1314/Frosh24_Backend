@@ -205,7 +205,7 @@ def book_ticket(request):
             if event.available_tickets <= 0 or not event.is_booking:
                 return Response({"error": "No tickets available for this event"}, status=status.HTTP_400_BAD_REQUEST)
             
-            new_pass = passes.objects.create(event_id=event, registration_id=user, is_booked=True,)
+            new_pass = passes.objects.create(event_id=event, registration_id=user, is_booked=True,slot_test=slot_id)
      
             Events.objects.filter(id=event.id).update(available_tickets=F('available_tickets') - 1)
             
@@ -392,6 +392,7 @@ def handle_initial_scan(data):
             'image': user.image if hasattr(user, 'image') else None,
             'is_scanned': event_pass.is_scanned,
             'is_booked': event_pass.is_booked,
+            'slot_test': event_pass.slot_test,
             'last_scanned': event_pass.last_scanned.isoformat(),
             'message': 'User information retrieved successfully'
         })

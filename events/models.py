@@ -31,7 +31,7 @@ class passes(models.Model):
     is_booked = models.BooleanField("is_booked", default=False)
     is_scanned = models.BooleanField("is_scanned", default=False)
     last_scanned = models.DateTimeField(auto_now=True, blank=True)
-
+    slot_test=models.IntegerField(default=0)
     def __str__(self):
         return f"Pass for - User: {self.registration_id}"
     
