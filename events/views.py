@@ -340,7 +340,7 @@ def qr_scanner_view(request):
             return JsonResponse({'success': False, 'error': 'Invalid JSON'}, status=400)
         except Exception as e:
             print(f"Unexpected error: {str(e)}")
-            print(traceback.format_exc())
+            # print(traceback.format_exc())
             return JsonResponse({
                 'success': False, 
                 'error': 'An unexpected error occurred',
@@ -369,7 +369,7 @@ def handle_initial_scan(data):
         print(f"Selected event: {event.id} - {event.name}")
 
         print("Querying passes...")
-        event_pass = passes.objects.get(registration_id=user, event_id__event_id=event.event_id)
+        event_pass = passes.objects.get(registration_id=user, event_id=event)
         print(f"Event pass query result: {event_pass}")
         print(event_pass.event_id)
 
@@ -476,7 +476,7 @@ def handle_action(data):
         }, status=404)
     except Exception as e:
         print(f"Unexpected error in handle_action: {str(e)}")
-        print(traceback.format_exc())
+        # print(traceback.format_exc())
         return JsonResponse({
             'success': False,
             'error': 'An error occurred while processing the action',
