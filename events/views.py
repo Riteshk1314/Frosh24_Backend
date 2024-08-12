@@ -369,7 +369,7 @@ def handle_initial_scan(data):
         print(f"Selected event: {event.id} - {event.name}")
 
         print("Querying passes...")
-        event_pass = passes.objects.get(registration_id=user, event_id=event)
+        event_pass = passes.objects.get(registration_id=user, event_id__event_id=event.event_id)
         print(f"Event pass query result: {event_pass}")
         print(event_pass.event_id)
 
