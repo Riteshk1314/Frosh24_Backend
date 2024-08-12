@@ -308,7 +308,7 @@ def book_ticket(request):
 # >>>>>>> branch1
 #         return render(request, 'website/scanner.html')
 
-@csrf_exempt
+ 
 @csrf_exempt
 def qr_scanner_view(request):
     print("qr_scanner_view called")
@@ -424,14 +424,17 @@ def handle_action(data):
     
     try:
         user = User.objects.get(secure_id=qr_data)
-        event = Events.objects.filter(event_id__event_id=event.event_id)
         
-        if not event:
+        # Get the current live event
+        live_events = Events.objects.filter(is_live=True)
+        if not live_events.exists():
             return JsonResponse({
                 'success': False,
                 'error': 'No live event found',
                 'message': 'There is no active event at the moment'
             }, status=404)
+
+        event = live_events.first()
         
         try:
             event_pass = passes.objects.get(registration_id=user, event_id__event_id=event.event_id)
@@ -441,7 +444,8 @@ def handle_action(data):
                 'error': 'No pass found',
                 'message': 'No pass found for this user and event'
             }, status=404)
-        
+            
+                    
         if action == 'accept':
             print("accept action tried")
             event_pass.is_scanned = True

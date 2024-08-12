@@ -4,6 +4,8 @@ from hoods.models import Hoods
 import random
 import string
 import json
+# from events.models import passes
+from events.models import Events
 from django.contrib import messages
 from users.models import User
 from datetime import datetime
@@ -17,6 +19,7 @@ from users.models import User
 from hoods.serializers import HoodSerializer, UserSerializer
 from django.db import transaction
 import random
+from events.models import passes
 # Create your views here.
 
 # def random_allotments():
@@ -71,9 +74,31 @@ def hood_leaderboard(request):
     try:
         user = User.objects.get(registration_id=registration_id)
         user_hood = user.hood_name
+        try:
+            pass_users =passes.objects.filter(registration_id=user).first()
+            response_data = {
+            # "user_hood": {
+            #     "id": Hood.hood_id,
+            #     "name": Hood.hood_name,
+            # },
+            "profile_photo": str(user.image),
+            "secure_id": str(user.secure_id),
+            "pass_users":str(pass_users.event_id),
+            "slot_test":str(pass_users.slot_test),
+            "is_booked":str(pass_users.is_booked),
+            
+            # "name":user.name,
+            
+            # "all_hoods": serializer.data,
+        }
+        except pass_users.DoesNotExist:
+            return Response({"error": " not found"}, status=status.HTTP_404_NOT_FOUND)
+
+        print(pass_users)
     except User.DoesNotExist:
         return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
-
+    
+    
     # if not user_hood:
     #     return Response({"error": "User is not assigned to any hood"}, status=status.HTTP_404_NOT_FOUND)
 
@@ -86,17 +111,7 @@ def hood_leaderboard(request):
     # except Hoods.DoesNotExist:
     #     return Response({"error": "User's hood not found"}, status=status.HTTP_404_NOT_FOUND)
     # Hood=Hoods.objects.get(hood_name=user_hood)
-    response_data = {
-        # "user_hood": {
-        #     "id": Hood.hood_id,
-        #     "name": Hood.hood_name,
-        # },
-        "profile_photo": str(user.image),
-        "secure_id": str(user.secure_id),
-        # "name":user.name,
-        
-        # "all_hoods": serializer.data,
-    }
+    
     return Response(response_data)
 
 # "user_hood": {
