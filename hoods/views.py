@@ -91,7 +91,7 @@ def hood_leaderboard(request):
             
             # "all_hoods": serializer.data,
         }
-        except pass_users.DoesNotExist:
+        except pass_users==None:
             return Response({"error": " not found"}, status=status.HTTP_404_NOT_FOUND)
 
         print(pass_users)
