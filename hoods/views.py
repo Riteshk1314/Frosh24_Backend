@@ -80,15 +80,13 @@ def hood_leaderboard(request):
         return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
     
     pass_users = passes.objects.filter(registration_id=user).first()
-    if pass_users is None:
-        return Response({"error": "Pass not found"}, status=status.HTTP_404_NOT_FOUND)
-
+    
     response_data = {
         "profile_photo": str(user.image),
         "secure_id": str(user.secure_id),
-        "pass_users": str(pass_users.event_id),
-        "slot_test": str(pass_users.slot_test),
-        "is_booked": str(pass_users.is_booked),
+        "pass_users": str(pass_users.event_id) if pass_users else "",
+        "slot_test": str(pass_users.slot_test) if pass_users else "",
+        "is_booked": str(pass_users.is_booked) if pass_users else "",
     }
     # if not user_hood:
     #     return Response({"error": "User is not assigned to any hood"}, status=status.HTTP_404_NOT_FOUND)
