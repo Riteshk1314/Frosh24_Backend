@@ -20,12 +20,14 @@ from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from django.conf.urls import include
 # from django.conf.urls.static import static
 # from froshbackend import settings
-
+from events import views
+from froshbackend import views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('event/', include('events.urls')),
     path('', include('users.urls')),
     path('', include('hoods.urls')),
+    path('testing/',views.testing, name='testing'),
     path('hijack/', include('hijack.urls')),
     
 ]
