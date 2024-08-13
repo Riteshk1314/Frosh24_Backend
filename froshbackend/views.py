@@ -11,8 +11,8 @@ from django.http import JsonResponse
 
 @csrf_exempt
 def testing(request):
-    if request.method == 'POST':
-        # CPU-intensive query
+    if request.method == 'GET':
+      
         result = Events.objects.annotate(
             total_passes=Count('passes'),
             booked_passes=Sum(Case(
@@ -57,7 +57,6 @@ def testing(request):
             scan_rate__gt=25
         ).order_by('-date', '-user_engagement', '-booking_rate')[:50]
 
-        # Convert queryset to list of dictionaries
         result_list = list(result.values('id', 'name', 'date', 'total_passes', 'booked_passes', 'scanned_passes', 'booking_rate', 'scan_rate', 'user_engagement'))
 
         return JsonResponse({'results': result_list})
