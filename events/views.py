@@ -197,7 +197,7 @@ def book_ticket(request):
     
     try:
         with transaction.atomic():
-            event = Events.objects.select_for_update().get(name=name, is_live=True,slot_id=slot_id)
+            event = Events.objects.get(name=name, is_live=True,slot_id=slot_id)
             
             if passes.objects.filter(registration_id=user, event_id__event_id=event.event_id).exists():
                 return Response({"error": "User already has a booked ticket"}, status=status.HTTP_400_BAD_REQUEST)
