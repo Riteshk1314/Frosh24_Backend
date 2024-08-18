@@ -32,14 +32,15 @@ logger = logging.getLogger(__name__)
 def send_credentials_email(email, registration_id, password):
     subject = 'Your Account Credentials'
     message = f"""
-    Hello sir,
+    Greetings from Frosh 2024! 
 
     Here are your credentials for booking tickets of frosh events:
 
-    Registration ID: {registration_id}
+    Registration ID: your registration ID 
     Password: {password}
 
-    Please log in and change your password immediately.
+    Please log in to the https://froshtiet.com/ to book your tickets.
+    
 
     Best regards,
     Frosh 2024

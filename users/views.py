@@ -78,41 +78,24 @@ class ForgotPassword(APIView):
 # import random
 # import csv
 # import logging
-# import openpyxl
-from django.db import transaction
- # Make sure to import your custom User model
 
-# logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+from django.db import transaction
+#  # Make sure to import your custom User model
+
+#  logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 # def generate_random_password(length=10):
 #     digits = string.digits
 #     password = ''.join(random.choice(digits) for _ in range(length))
 #     return password
-
 # def generate_random_secure_id(length=8):
 #     digits = string.digits
 #     secure_id = ''.join(random.choice(digits) for _ in range(length))
 #     return secure_id
-# def convert_binary_to_csv(binary_file_path, csv_file_path):
-#     try:
-#         with open(binary_file_path, 'rb') as binary_file:
-#             binary_content = binary_file.read()
-        
-#         # Assuming the binary content is UTF-8 encoded
-#         text_content = binary_content.decode('utf-8')
-        
-#         # Write the decoded content to a new CSV file
-#         with open(csv_file_path, 'w', newline='', encoding='utf-8') as csv_file:
-#             csv_file.write(text_content)
-        
-#         logging.info(f"Successfully converted binary file to CSV: {csv_file_path}")
-#     except Exception as e:
-#         logging.error(f"Error converting binary to CSV: {e}")
-#         raise
 
 # def csv_db():
 #     input_csv_file = 'freshers.csv'
-#     output_csv_file = 'user_data_with_passwords3.csv'
+#     output_csv_file = 'user_data_with_secure_ids.csv'
 #     logging.info(f"Opening input CSV file: {input_csv_file}")
     
 #     row_count = 0
@@ -125,7 +108,7 @@ from django.db import transaction
 #             csvwriter = csv.writer(output_csvfile)
             
 #             # Write header to output CSV
-#             csvwriter.writerow(['Name', 'Registration ID', 'Email', 'Image Path', 'Password', 'Secure ID'])
+#             csvwriter.writerow(['Name', 'Registration ID', 'Email', 'Image Path', 'Secure ID'])
             
 #             start = int(input('Enter start row number: '))
 #             for row_num, row in enumerate(csvreader, start=0):
@@ -137,31 +120,28 @@ from django.db import transaction
 #                     continue
                 
 #                 name, registration_id, email, image_path = row
-#                 password = generate_random_password()
 #                 secure_id = generate_random_secure_id()
-              
-#                 print(f"Processing: {name}, {registration_id}, {password}, {secure_id}")
-#                 logging.info(f"Generated values for row {row_num}: password={password}, secure_id={secure_id}")
+            
+#                 print(f"Processing: {name}, {registration_id}, {secure_id}")
+#                 logging.info(f"Generated values for row {row_num}: secure_id={secure_id}")
                 
 #                 try:
 #                     with transaction.atomic():
 #                         custom_user = User.objects.create(
-#                                 name=name,
-#                                 email=email,
-#                                 registration_id=registration_id,
-#                                 image=image_path,
-#                                 secure_id=secure_id,
-#                                 is_active=True,
-#                                 is_superuser=False,
-#                                 events=[]
-#                                 )
+#                             name=name,
+#                             email=email,
+#                             registration_id=registration_id,
+#                             image=image_path,
+#                             secure_id=secure_id,
+#                             is_active=True,
+#                             is_superuser=False,
+#                             events=[]
+#                         )
                         
-#                         csvwriter.writerow([name, registration_id, email, image_path, password, secure_id])
-#                         custom_user.set_password(password)
+#                         csvwriter.writerow([name, registration_id, email, image_path, secure_id])
+#                         custom_user.set_unusable_password()  # Set an unusable password
 #                         custom_user.save()
                         
-#                     # Write data to output CSV
-                    
 #                     row_count += 1
 #                     logging.info(f"Successfully created user and added to CSV for row {row_num}")
 #                 except Exception as e:
@@ -182,5 +162,4 @@ from django.db import transaction
 
 #     logging.info("Data processing completed")
 
-
-# # csv_db()
+# csv_db()
