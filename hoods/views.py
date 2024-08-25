@@ -82,6 +82,7 @@ def hood_leaderboard(request):
     pass_users = passes.objects.filter(registration_id=user).first()
     
     response_data = {
+        "name":str(user.name),
         "profile_photo": str(user.image),
         "secure_id": str(user.secure_id),
         "pass_users": str(pass_users.event_id) if pass_users else "",

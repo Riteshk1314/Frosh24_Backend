@@ -92,18 +92,18 @@ class User(AbstractUser):
             #     print(raw_password)
             #     self.set_password(raw_password)
 
-            # if not self.qr:
-            #     self.qr = self.generate_qr_code()
-            kwargs.pop('update_fields', None)
-        elif update_fields is not None:
+        #     if not self.qr:
+        #         self.qr = self.generate_qr_code()
+        #     kwargs.pop('update_fields', None)
+        # elif update_fields is not None:
   
             kwargs['update_fields'] = update_fields
 
         super().save(*args, **kwargs)
 
-# mailing is commented for the purpose of setting up db 
-        # if is_new and raw_password:
-        #     send_credentials_email(self.email, self.registration_id, raw_password)
+# # mailing is commented for the purpose of setting up db 
+#         if is_new and raw_password:
+#             send_credentials_email(self.email, self.registration_id, raw_password)
             
              
             

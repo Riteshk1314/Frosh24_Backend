@@ -36,7 +36,7 @@ def send_credentials_email(email, registration_id, password):
 
     Here are your credentials for booking tickets of frosh events:
 
-    Registration ID: your registration ID 
+    Registration ID: your application number 
     Password: {password}
 
     Please log in to the https://froshtiet.com/ to book your tickets.

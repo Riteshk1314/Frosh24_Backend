@@ -80,9 +80,9 @@ class ForgotPassword(APIView):
 # import logging
 
 from django.db import transaction
-#  # Make sure to import your custom User model
+# #  # Make sure to import your custom User model
 
-#  logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+# #  logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 # def generate_random_password(length=10):
 #     digits = string.digits
@@ -96,7 +96,7 @@ from django.db import transaction
 # def csv_db():
 #     input_csv_file = 'freshers.csv'
 #     output_csv_file = 'user_data_with_secure_ids.csv'
-#     logging.info(f"Opening input CSV file: {input_csv_file}")
+#     # logging.info(f"Opening input CSV file: {input_csv_file}")
     
 #     row_count = 0
 
@@ -135,11 +135,12 @@ from django.db import transaction
 #                             secure_id=secure_id,
 #                             is_active=True,
 #                             is_superuser=False,
+#                             password=None,
 #                             events=[]
 #                         )
                         
-#                         csvwriter.writerow([name, registration_id, email, image_path, secure_id])
-#                         custom_user.set_unusable_password()  # Set an unusable password
+#                         # csvwriter.writerow([name, registration_id, email, image_path, secure_id])
+#                         #  # Set an unusable password
 #                         custom_user.save()
                         
 #                     row_count += 1
