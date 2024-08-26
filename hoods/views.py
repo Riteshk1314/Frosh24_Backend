@@ -88,6 +88,7 @@ def hood_leaderboard(request):
         "pass_users": str(pass_users.event_id) if pass_users else "",
         "slot_test": str(pass_users.slot_test) if pass_users else "",
         "is_booked": str(pass_users.is_booked) if pass_users else "",
+        "hood":str(user.hood_name) if user.hood_name else "",
     }
     # if not user_hood:
     #     return Response({"error": "User is not assigned to any hood"}, status=status.HTTP_404_NOT_FOUND)
@@ -111,3 +112,60 @@ def hood_leaderboard(request):
 #         "profile_photo": str(user.image),
 #         "secure_id": str(user.secure_id),  # Convert to string in case it's not
 #         "all_hoods": serializer.data,
+# import random
+# from django.db import transaction
+# from users.models import User
+# from hoods.models import Hoods
+
+# @transaction.atomic
+# def distribute_users_to_hoods():
+#     # Fetch the four hoods from the database
+#     hood_names = [
+#         "Duskborne keepers",
+#         "Lunar serpants",
+#         "Starlight sentinels",
+#         "Celestial wardens"
+#     ]
+    
+#     hoods = list(Hoods.objects.filter(hood_name__in=hood_names))
+
+#     if len(hoods) != len(hood_names):
+#         missing_hoods = set(hood_names) - set(hood.hood_name for hood in hoods)
+#         print(f"Not all required hoods are present in the database. Missing hoods: {missing_hoods}")
+#         return
+
+#     # Fetch all users from the database
+#     users = list(User.objects.all())
+
+#     if not users:
+#         print("No users found in the database.")
+#         return
+
+#     # Shuffle the users list to ensure random distribution
+#     random.shuffle(users)
+
+#     # Calculate the number of users per hood
+#     users_per_hood = len(users) // len(hoods)
+
+#     # Distribute users to hoods
+#     distributed_hoods = {hood: [] for hood in hoods}
+
+#     for i, user in enumerate(users):
+#         hood_index = i % len(hoods)
+#         hood = hoods[hood_index]
+#         distributed_hoods[hood].append(user)
+        
+#         # Update user's hood_name field with the appropriate Hoods object
+#         user.hood_name = hood
+#         print(f"Assigning {user.name} to {hood.hood_name}")
+#         user.save()
+
+#     # Print the results
+#     for hood, members in distributed_hoods.items():
+#         print(f"{hood.hood_name}: {len(members)} members")
+#         for user in members:
+#             print(f"{user.name}")  # Assuming the User model has a 'username' field
+#         print()
+
+# # Call the function to distribute users
+# distribute_users_to_hoods()
