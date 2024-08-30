@@ -74,7 +74,7 @@ def hood_leaderboard(request):
     try:
         user = User.objects.get(registration_id=registration_id)
         user_hood = user.hood_name
-        event=Events.objects.get(is_live=True).first()
+        event=Events.objects.filter(is_live=True).first()
         pass_users = passes.objects.filter(registration_id=user, event_id=event)
     
 
