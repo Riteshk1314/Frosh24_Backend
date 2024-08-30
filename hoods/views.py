@@ -74,10 +74,10 @@ def hood_leaderboard(request):
     try:
         user = User.objects.get(registration_id=registration_id)
         user_hood = user.hood_name
-        # event=Events.objects.get(is_live=True).first()
-        pass_users = passes.objects.get(registration_id=registration_id)
+        event=Events.objects.get(is_live=True).first()
+        pass_users = passes.objects.filter(registration_id=user, event_id=event)
     
-        
+
         
     except User.DoesNotExist:
         return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
