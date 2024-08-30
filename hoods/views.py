@@ -74,8 +74,8 @@ def hood_leaderboard(request):
     try:
         user = User.objects.get(registration_id=registration_id)
         user_hood = user.hood_name
-        event=Events.objects.get(is_live=True)
-        pass_users = passes.objects.filter(registration_id=user, event_id=event).first()
+        # event=Events.objects.get(is_live=True).first()
+        pass_users = passes.objects.filter(registration_id=user)
     
         
         
@@ -170,3 +170,77 @@ def hood_leaderboard(request):
 
 # # Call the function to distribute users
 # distribute_users_to_hoods()
+
+
+# @transaction.atomic
+# def check_user_hoods():
+#     # Get all users
+#     all_users = User.objects.all()
+    
+#     # Get all valid hood names
+#     valid_hood_names = set(Hoods.objects.values_list('hood_name', flat=True))
+    
+#     users_without_hood = []
+#     users_with_invalid_hood = []
+    
+#     for user in all_users:
+#         print("Checking user:", user.name)
+#         if user.hood_name is None:
+#             users_without_hood.append(user)
+#         elif user.hood_name.hood_name not in valid_hood_names:
+#             users_with_invalid_hood.append(user)
+    
+#     # Print results
+#     print(f"Total users: {all_users.count()}")
+#     print(f"Users without a hood: {len(users_without_hood)}")
+#     print(f"Users with an invalid hood: {len(users_with_invalid_hood)}")
+    
+#     if users_without_hood:
+#         print("\nUsers without a hood:")
+#         for user in users_without_hood:
+#             print(f"- {user.name} (ID: {user.id})")
+    
+#     if users_with_invalid_hood:
+#         print("\nUsers with an invalid hood:")
+#         for user in users_with_invalid_hood:
+#             print(f"- {user.name} (ID: {user.id}, Invalid hood: {user.hood_name.hood_name})")
+    
+#     if not users_without_hood and not users_with_invalid_hood:
+#         print("All users have valid hood assignments.")
+
+# # Call the function to check user hoods
+# # check_user_hoods()
+# from django.db import transaction
+# from django.db.models import Count
+# from users.models import User
+# from hoods.models import Hoods
+
+# @transaction.atomic
+# def count_users_per_hood():
+#     # Get all hoods and annotate them with the count of users
+#     hoods_with_counts = Hoods.objects.annotate(user_count=Count('users'))
+    
+#     # Get total number of users
+#     total_users = User.objects.count()
+    
+#     # Print results
+#     print("Users per hood:")
+#     for hood in hoods_with_counts:
+#         print(f"{hood.hood_name}: {hood.user_count} users")
+    
+#     # Count users without a hood
+#     users_without_hood = User.objects.filter(hood_name__isnull=True).count()
+    
+#     print(f"\nUsers without a hood: {users_without_hood}")
+#     print(f"Total users: {total_users}")
+    
+#     # Verify that the sum of users in hoods plus users without hood equals total users
+#     sum_users_in_hoods = sum(hood.user_count for hood in hoods_with_counts)
+#     if sum_users_in_hoods + users_without_hood == total_users:
+#         print("\nAll users accounted for.")
+#     else:
+#         print("\nWarning: User count discrepancy detected.")
+#         print(f"Sum of users in hoods ({sum_users_in_hoods}) + users without hood ({users_without_hood}) ≠ total users ({total_users})")
+
+# # Call the function to count users per hood
+# count_users_per_hood()
