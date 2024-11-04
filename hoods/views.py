@@ -19,7 +19,9 @@ from users.models import User
 from hoods.serializers import HoodSerializer, UserSerializer
 from django.db import transaction
 import random
+from django.http import JsonResponse
 from events.models import passes
+from hoods.serializers import HoodSerializer, UserSerializer
 # Create your views here.
 
 # def random_allotments():
@@ -50,7 +52,7 @@ from events.models import passes
 #     # print(active_users.count())
     
     
-from hoods.serializers import HoodSerializer, UserSerializer
+
 
 # @api_view(['GET'])
 # def boh_leaderboard(request):
@@ -60,7 +62,7 @@ from hoods.serializers import HoodSerializer, UserSerializer
 #         many=True
 #     )
 #     return Response(serializer.data)
-from django.http import JsonResponse
+
 
 @api_view(['POST'])
 def hood_leaderboard(request):
