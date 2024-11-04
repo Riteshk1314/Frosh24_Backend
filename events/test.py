@@ -20,7 +20,7 @@ import json
 
 
 
-from ..users.test import qr_maker, generate_user_secure_id
+from ..users.qrtest import qr_maker, generate_user_secure_id
 from ..users.views import *
 from ..users.models import User
 from .models import Events
